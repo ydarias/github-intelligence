@@ -1,0 +1,28 @@
+{
+  "name": "@github-intelligence/issues-collector",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@octokit/rest": "22.0.1",
+    "flat-cache": "6.1.22"
+  },
+  "devDependencies": {
+    "@github-intelligence/tsconfig": "*",
+    "@types/node": "22.19.17",
+    "typescript": "5.7.3"
+  }
+}
