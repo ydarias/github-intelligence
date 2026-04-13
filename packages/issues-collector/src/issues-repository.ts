@@ -9,7 +9,7 @@ export interface IssuesRepository {
 export class FlatCacheIssuesRepository implements IssuesRepository {
   private readonly cacheDir: string;
 
-  constructor(cacheDir = ".cache/issues-collector") {
+  constructor(cacheDir = "/tmp/.cache/issues-collector") {
     this.cacheDir = cacheDir;
   }
 
