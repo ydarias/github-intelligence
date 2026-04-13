@@ -1,17 +1,7 @@
 import type { IssuesResponse } from "./types.js";
 
-export async function fetchIssues(params: {
-  owner: string;
-  repo: string;
-  from: string;
-  to: string;
-  token?: string;
-}): Promise<IssuesResponse> {
-  const response = await fetch("/api/issues", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(params),
-  });
+export async function fetchIssues(): Promise<IssuesResponse> {
+  const response = await fetch("/api/issues");
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({ error: "Unknown error" }));
