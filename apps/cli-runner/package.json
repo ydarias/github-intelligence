@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@github-intelligence/issues-collector": "*",
-    "commander": "14.0.3"
+    "commander": "14.0.3",
+    "date-fns": "4.1.0"
   },
   "devDependencies": {
     "@github-intelligence/tsconfig": "*",
