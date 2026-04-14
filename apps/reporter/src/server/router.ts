@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Router } from "express";
 import { FlatCacheIssuesRepository } from "@github-intelligence/issues-collector";
 import { computeStats } from "./stats.js";
@@ -5,7 +6,7 @@ import { computeStats } from "./stats.js";
 export const router = Router();
 
 router.get("/issues", (_req, res) => {
-  const repository = new FlatCacheIssuesRepository();
+  const repository = new FlatCacheIssuesRepository(process.env['CACHE_FOLDER']);
   const issues = repository.loadAll();
 
   if (issues.length === 0) {
