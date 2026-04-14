@@ -48,6 +48,7 @@ export function IssueTable({ issues, page, totalPages, onPageChange, authors, se
                 </select>
               ) : "Author"}
             </th>
+            <th style={thStyle}>Assignees</th>
             <th style={thStyle}>Created</th>
             <th style={thStyle}>Closed</th>
           </tr>
@@ -78,6 +79,7 @@ export function IssueTable({ issues, page, totalPages, onPageChange, authors, se
                 </span>
               </td>
               <td style={{ ...tdStyle, color: "#666" }}>{issue.author}</td>
+              <td style={{ ...tdStyle, color: "#666" }}>{issue.assignees?.length ? issue.assignees.join(", ") : "—"}</td>
               <td style={{ ...tdStyle, color: "#666" }}>{issue.createdAt.slice(0, 10)}</td>
               <td style={{ ...tdStyle, color: "#666" }}>{issue.closedAt?.slice(0, 10) ?? "—"}</td>
             </tr>

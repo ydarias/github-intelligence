@@ -17,6 +17,10 @@ export class Printer {
       6,
       Math.max(...issues.map((i) => i.author.length))
     );
+    const assigneesWidth = Math.max(
+      9,
+      Math.max(...issues.map((i) => (i.assignees.length ? i.assignees.join(", ").length : 1)))
+    );
 
     const pad = (s: string, n: number) => s.slice(0, n).padEnd(n);
 
@@ -27,7 +31,9 @@ export class Printer {
       "  " +
       pad("State", COL_STATE) +
       "  " +
-      pad("Author", authorWidth);
+      pad("Author", authorWidth) +
+      "  " +
+      pad("Assignees", assigneesWidth);
 
     const divider = "-".repeat(header.length);
 
@@ -42,7 +48,9 @@ export class Printer {
           "  " +
           pad(issue.state, COL_STATE) +
           "  " +
-          pad(issue.author, authorWidth)
+          pad(issue.author, authorWidth) +
+          "  " +
+          pad(issue.assignees.length ? issue.assignees.join(", ") : "—", assigneesWidth)
       );
     }
   }

@@ -9,6 +9,7 @@ export interface GitHubIssueDTO {
   url: string;
   author: string;
   labels: string[];
+  assignees: string[];
 }
 
 export interface IssueStats {

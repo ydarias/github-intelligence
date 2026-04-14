@@ -41,6 +41,7 @@ export class GitHubClient {
         typeof label === "string" ? label : (label.name ?? "")
       ),
       author: item.user?.login ?? "",
+      assignees: item.assignees?.map((a) => a.login) ?? [],
     }));
   }
 }
