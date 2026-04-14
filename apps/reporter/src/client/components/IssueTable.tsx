@@ -20,7 +20,7 @@ export function IssueTable({ issues, page, totalPages, onPageChange, authors, se
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={thStyle}>#</th>
+            <th style={thStyle}>Issue</th>
             <th style={thStyle}>Title</th>
             <th style={thStyle}>State</th>
             <th style={thStyle}>
@@ -56,7 +56,7 @@ export function IssueTable({ issues, page, totalPages, onPageChange, authors, se
           {issues.map((issue) => (
             <tr key={issue.id} style={{ borderBottom: "1px solid #eaeaea" }}>
               <td style={tdStyle}>
-                <span style={{ color: "#666", fontSize: "0.8125rem" }}>#{issue.number}</span>
+                <span style={{ color: "#666", fontSize: "0.8125rem" }}>{issue.repository}#{issue.number}</span>
               </td>
               <td style={tdStyle}>
                 <a href={issue.url} target="_blank" rel="noreferrer" style={{ color: "#000", textDecoration: "none", fontSize: "0.875rem" }}>

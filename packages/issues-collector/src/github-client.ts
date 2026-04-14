@@ -29,6 +29,7 @@ export class GitHubClient {
     return items.map((item) => ({
       id: item.id,
       number: item.number,
+      repository: repo,
       title: item.title,
       body: item.body ?? null,
       state: item.state,

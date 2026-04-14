@@ -1,6 +1,7 @@
 export interface GitHubIssueDTO {
   id: number;
   number: number;
+  repository: string;
   title: string;
   state: string;
   createdAt: string;
