@@ -9,7 +9,7 @@ interface Props {
 
 export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
   if (issues.length === 0) {
-    return <p>No issues found.</p>;
+    return <p style={{ color: "#666", padding: "24px 0", fontSize: "0.875rem" }}>No issues found.</p>;
   }
 
   return (
@@ -27,43 +27,84 @@ export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
         </thead>
         <tbody>
           {issues.map((issue) => (
-            <tr key={issue.id}>
-              <td style={tdStyle}>{issue.number}</td>
+            <tr key={issue.id} style={{ borderBottom: "1px solid #eaeaea" }}>
               <td style={tdStyle}>
-                <a href={issue.url} target="_blank" rel="noreferrer">
+                <span style={{ color: "#666", fontSize: "0.8125rem" }}>#{issue.number}</span>
+              </td>
+              <td style={tdStyle}>
+                <a href={issue.url} target="_blank" rel="noreferrer" style={{ color: "#000", textDecoration: "none", fontSize: "0.875rem" }}>
                   {issue.title}
                 </a>
               </td>
-              <td style={tdStyle}>{issue.state}</td>
-              <td style={tdStyle}>{issue.author}</td>
-              <td style={tdStyle}>{issue.createdAt.slice(0, 10)}</td>
-              <td style={tdStyle}>{issue.closedAt?.slice(0, 10) ?? "—"}</td>
+              <td style={tdStyle}>
+                <span style={{
+                  display: "inline-block",
+                  padding: "2px 8px",
+                  borderRadius: "9999px",
+                  fontSize: "0.75rem",
+                  fontWeight: 500,
+                  background: issue.state === "open" ? "#f0fdf4" : "#faf5ff",
+                  color: issue.state === "open" ? "#15803d" : "#7e22ce",
+                  border: `1px solid ${issue.state === "open" ? "#bbf7d0" : "#e9d5ff"}`,
+                }}>
+                  {issue.state}
+                </span>
+              </td>
+              <td style={{ ...tdStyle, color: "#666" }}>{issue.author}</td>
+              <td style={{ ...tdStyle, color: "#666" }}>{issue.createdAt.slice(0, 10)}</td>
+              <td style={{ ...tdStyle, color: "#666" }}>{issue.closedAt?.slice(0, 10) ?? "—"}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", margin: "16px 0" }}>
-        <button onClick={() => onPageChange(page - 1)} disabled={page <= 1}>
-          Previous
-        </button>
-        <span>
-          Page {page} of {totalPages}
-        </span>
-        <button onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
-          Next
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "20px 0", fontSize: "0.875rem" }}>
+          <button
+            onClick={() => onPageChange(page - 1)}
+            disabled={page <= 1}
+            style={pagerBtnStyle(page <= 1)}
+          >
+            Previous
+          </button>
+          <span style={{ color: "#666" }}>
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => onPageChange(page + 1)}
+            disabled={page >= totalPages}
+            style={pagerBtnStyle(page >= totalPages)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
+function pagerBtnStyle(disabled: boolean): React.CSSProperties {
+  return {
+    padding: "6px 14px",
+    border: "1px solid #eaeaea",
+    borderRadius: "6px",
+    background: "#fff",
+    color: disabled ? "#ccc" : "#000",
+    cursor: disabled ? "default" : "pointer",
+    fontSize: "0.875rem",
+  };
+}
+
 const thStyle: React.CSSProperties = {
   textAlign: "left",
-  padding: "8px",
-  borderBottom: "2px solid #ccc",
+  padding: "10px 12px",
+  borderBottom: "1px solid #eaeaea",
+  fontSize: "0.6875rem",
+  fontWeight: 500,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  color: "#666",
 };
 
 const tdStyle: React.CSSProperties = {
-  padding: "8px",
-  borderBottom: "1px solid #eee",
+  padding: "12px",
 };

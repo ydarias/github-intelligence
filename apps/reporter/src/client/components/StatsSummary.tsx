@@ -1,24 +1,25 @@
-import type { IssueStats } from "../types.js";
-
-interface Props {
-  stats: IssueStats;
+interface Stat {
+  label: string;
+  value: number;
 }
 
-export function StatsSummary({ stats }: Props) {
+interface Props {
+  items: Stat[];
+}
+
+export function StatsSummary({ items }: Props) {
   return (
-    <dl style={{ display: "flex", gap: "32px", margin: "16px 0" }}>
-      <div>
-        <dt>Total</dt>
-        <dd style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{stats.total}</dd>
-      </div>
-      <div>
-        <dt>Open</dt>
-        <dd style={{ fontSize: "1.5rem", fontWeight: "bold", color: "green" }}>{stats.open}</dd>
-      </div>
-      <div>
-        <dt>Closed</dt>
-        <dd style={{ fontSize: "1.5rem", fontWeight: "bold", color: "purple" }}>{stats.closed}</dd>
-      </div>
+    <dl style={{ display: "flex", gap: "48px", margin: "0 0 32px", padding: 0 }}>
+      {items.map(({ label, value }) => (
+        <div key={label}>
+          <dt style={{ fontSize: "0.6875rem", fontWeight: 500, letterSpacing: "0.08em", color: "#666", textTransform: "uppercase", marginBottom: "4px" }}>
+            {label}
+          </dt>
+          <dd style={{ fontSize: "2rem", fontWeight: 600, color: "#000", margin: 0, lineHeight: 1 }}>
+            {value}
+          </dd>
+        </div>
+      ))}
     </dl>
   );
 }

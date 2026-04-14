@@ -16,15 +16,15 @@ export function IssuesOverTimeChart({ byDay }: Props) {
   if (byDay.length === 0) return null;
 
   return (
-    <div style={{ margin: "16px 0" }}>
-      <h2>Issues Over Time</h2>
-      <ResponsiveContainer width="100%" height={250}>
+    <div style={{ margin: "24px 0" }}>
+      <p style={{ fontSize: "0.6875rem", fontWeight: 500, letterSpacing: "0.08em", color: "#666", textTransform: "uppercase", margin: "0 0 12px" }}>Issues Over Time</p>
+      <ResponsiveContainer width="100%" height={220}>
         <LineChart data={byDay}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-          <YAxis allowDecimals={false} />
-          <Tooltip />
-          <Line type="monotone" dataKey="count" stroke="#8884d8" dot={false} />
+          <CartesianGrid stroke="#eaeaea" strokeDasharray="0" vertical={false} />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#666" }} axisLine={false} tickLine={false} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#666" }} axisLine={false} tickLine={false} />
+          <Tooltip contentStyle={{ border: "1px solid #eaeaea", borderRadius: "6px", fontSize: "0.8125rem" }} />
+          <Line type="monotone" dataKey="count" stroke="#000" dot={false} strokeWidth={1.5} />
         </LineChart>
       </ResponsiveContainer>
     </div>

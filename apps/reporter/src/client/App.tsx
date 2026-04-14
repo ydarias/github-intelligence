@@ -8,12 +8,20 @@ import { IssueTable } from "./components/IssueTable.js";
 const PAGE_SIZE = 50;
 
 type Status = "loading" | "error" | "success";
+type Tab = "all" | "sameDay" | "open";
+
+const TABS: Array<{ id: Tab; label: string }> = [
+  { id: "all", label: "All Issues" },
+  { id: "sameDay", label: "Same Day" },
+  { id: "open", label: "Still Open" },
+];
 
 export function App() {
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<IssuesResponse | null>(null);
   const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<Tab>("all");
 
   useEffect(() => {
     fetchIssues()
@@ -27,20 +35,72 @@ export function App() {
       });
   }, []);
 
-  const pagedIssues = data
-    ? data.issues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  function handleTabChange(tab: Tab) {
+    setActiveTab(tab);
+    setPage(1);
+  }
+
+  const filteredIssues = data
+    ? activeTab === "sameDay"
+      ? data.issues.filter(
+          (i) => i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10)
+        )
+      : activeTab === "open"
+        ? data.issues.filter((i) => i.state === "open")
+        : data.issues
     : [];
-  const totalPages = data ? Math.ceil(data.issues.length / PAGE_SIZE) : 0;
+
+  const pagedIssues = filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.ceil(filteredIssues.length / PAGE_SIZE);
 
   return (
-    <main style={{ padding: "24px", fontFamily: "sans-serif", maxWidth: "1200px", margin: "0 auto" }}>
-      <h1>GitHub Issues Reporter</h1>
-      {status === "loading" && <p>Loading…</p>}
-      {status === "error" && <p style={{ color: "red" }}>{error}</p>}
+    <main style={{ padding: "40px 24px", fontFamily: "system-ui, -apple-system, sans-serif", maxWidth: "1200px", margin: "0 auto", color: "#000" }}>
+      <h1 style={{ fontSize: "1.25rem", fontWeight: 600, margin: "0 0 32px" }}>GitHub Issues Reporter</h1>
+
+      {status === "loading" && <p style={{ color: "#666" }}>Loading…</p>}
+      {status === "error" && <p style={{ color: "#f00" }}>{error}</p>}
+
       {status === "success" && data !== null && (
         <>
-          <StatsSummary stats={data.stats} />
-          <IssuesOverTimeChart byDay={data.stats.byDay} />
+          <StatsSummary items={
+            activeTab === "all"
+              ? [
+                  { label: "Total", value: data.stats.total },
+                  { label: "Open", value: data.stats.open },
+                  { label: "Closed", value: data.stats.closed },
+                ]
+              : [{ label: activeTab === "sameDay" ? "Same Day" : "Still Open", value: filteredIssues.length }]
+          } />
+
+          <div style={{ borderTop: "1px solid #eaeaea", margin: "32px 0 0" }} />
+
+          <nav style={{ display: "flex", gap: "0", margin: "0 0 0" }}>
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  borderBottom: activeTab === tab.id ? "2px solid #000" : "2px solid transparent",
+                  padding: "12px 20px",
+                  fontSize: "0.875rem",
+                  fontWeight: activeTab === tab.id ? 600 : 400,
+                  color: activeTab === tab.id ? "#000" : "#666",
+                  cursor: "pointer",
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+
+          <div style={{ borderTop: "1px solid #eaeaea" }} />
+
+          {activeTab === "all" && (
+            <IssuesOverTimeChart byDay={data.stats.byDay} />
+          )}
+
           <IssueTable
             issues={pagedIssues}
             page={page}
