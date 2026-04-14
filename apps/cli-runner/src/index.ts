@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Command } from "commander";
 import { subMonths } from "date-fns";
 import {
@@ -32,8 +33,8 @@ if (owner === undefined || repo === undefined || owner === "" || repo === "") {
 const to = opts.to !== undefined ? new Date(opts.to) : new Date();
 const from = opts.from !== undefined ? new Date(opts.from) : subMonths(to, 1);
 
-const client = new GitHubClient(opts.token);
-const repository = new FlatCacheIssuesRepository();
+const client = new GitHubClient(process.env["GITHUB_TOKEN"], process.env["GITHUB_BASE_URL"]);
+const repository = new FlatCacheIssuesRepository(process.env["CACHE_FOLDER"]);
 const collector = new IssuesCollector(client, repository);
 
 const issues = await collector.collect({ owner, repo, from, to });

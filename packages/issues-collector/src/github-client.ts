@@ -4,9 +4,10 @@ import type { GitHubIssue } from "./types.js";
 export class GitHubClient {
   private readonly octokit: Octokit;
 
-  constructor(token?: string) {
+  constructor(token?: string, baseUrl = "https://api.github.com") {
     this.octokit = new Octokit({
       auth: token ?? process.env["GITHUB_TOKEN"],
+      baseUrl,
     });
   }
 
