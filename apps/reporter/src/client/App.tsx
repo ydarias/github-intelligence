@@ -8,12 +8,13 @@ import { IssueTable } from "./components/IssueTable.js";
 const PAGE_SIZE = 50;
 
 type Status = "loading" | "error" | "success";
-type Tab = "all" | "sameDay" | "open";
+type Tab = "all" | "sameDay" | "open" | "byAuthor";
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: "all", label: "All Issues" },
   { id: "sameDay", label: "Same Day" },
   { id: "open", label: "Still Open" },
+  { id: "byAuthor", label: "By Author" },
 ];
 
 export function App() {
@@ -22,6 +23,7 @@ export function App() {
   const [data, setData] = useState<IssuesResponse | null>(null);
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<Tab>("all");
+  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
 
   useEffect(() => {
     fetchIssues()
@@ -38,7 +40,12 @@ export function App() {
   function handleTabChange(tab: Tab) {
     setActiveTab(tab);
     setPage(1);
+    setSelectedAuthor("");
   }
+
+  const authors = data
+    ? Array.from(new Set(data.issues.map((i) => i.author))).sort()
+    : [];
 
   const filteredIssues = data
     ? activeTab === "sameDay"
@@ -47,7 +54,11 @@ export function App() {
         )
       : activeTab === "open"
         ? data.issues.filter((i) => i.state === "open")
-        : data.issues
+        : activeTab === "byAuthor"
+          ? selectedAuthor
+            ? data.issues.filter((i) => i.author === selectedAuthor)
+            : data.issues
+          : data.issues
     : [];
 
   const pagedIssues = filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -69,7 +80,11 @@ export function App() {
                   { label: "Open", value: data.stats.open },
                   { label: "Closed", value: data.stats.closed },
                 ]
-              : [{ label: activeTab === "sameDay" ? "Same Day" : "Still Open", value: filteredIssues.length }]
+              : activeTab === "byAuthor"
+                ? [
+                    { label: selectedAuthor || "All Authors", value: filteredIssues.length },
+                  ]
+                : [{ label: activeTab === "sameDay" ? "Same Day" : "Still Open", value: filteredIssues.length }]
           } />
 
           <div style={{ borderTop: "1px solid #eaeaea", margin: "32px 0 0" }} />
@@ -96,6 +111,29 @@ export function App() {
           </nav>
 
           <div style={{ borderTop: "1px solid #eaeaea" }} />
+
+          {activeTab === "byAuthor" && (
+            <div style={{ padding: "16px 0" }}>
+              <select
+                value={selectedAuthor}
+                onChange={(e) => { setSelectedAuthor(e.target.value); setPage(1); }}
+                style={{
+                  padding: "6px 12px",
+                  border: "1px solid #eaeaea",
+                  borderRadius: "6px",
+                  fontSize: "0.875rem",
+                  color: "#000",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="">All authors</option>
+                {authors.map((author) => (
+                  <option key={author} value={author}>{author}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {activeTab === "all" && (
             <IssuesOverTimeChart byDay={data.stats.byDay} />
