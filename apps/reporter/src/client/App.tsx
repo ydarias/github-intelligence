@@ -48,17 +48,12 @@ export function App() {
     : [];
 
   const filteredIssues = data
-    ? activeTab === "sameDay"
-      ? data.issues.filter(
-          (i) => i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10)
-        )
-      : activeTab === "open"
-        ? data.issues.filter((i) => i.state === "open")
-        : activeTab === "byAuthor"
-          ? selectedAuthor
-            ? data.issues.filter((i) => i.author === selectedAuthor)
-            : data.issues
-          : data.issues
+    ? data.issues.filter((i) => {
+        if (activeTab === "sameDay" && !(i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10))) return false;
+        if (activeTab === "open" && i.state !== "open") return false;
+        if (selectedAuthor !== "" && i.author !== selectedAuthor) return false;
+        return true;
+      })
     : [];
 
   const pagedIssues = filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -75,15 +70,15 @@ export function App() {
         <>
           <StatsSummary items={
             activeTab === "all"
-              ? [
-                  { label: "Total", value: data.stats.total },
-                  { label: "Open", value: data.stats.open },
-                  { label: "Closed", value: data.stats.closed },
-                ]
-              : activeTab === "byAuthor"
-                ? [
-                    { label: selectedAuthor || "All Authors", value: filteredIssues.length },
+              ? selectedAuthor
+                ? [{ label: selectedAuthor, value: filteredIssues.length }]
+                : [
+                    { label: "Total", value: data.stats.total },
+                    { label: "Open", value: data.stats.open },
+                    { label: "Closed", value: data.stats.closed },
                   ]
+              : activeTab === "byAuthor"
+                ? [{ label: selectedAuthor || "All Authors", value: filteredIssues.length }]
                 : [{ label: activeTab === "sameDay" ? "Same Day" : "Still Open", value: filteredIssues.length }]
           } />
 
@@ -112,29 +107,6 @@ export function App() {
 
           <div style={{ borderTop: "1px solid #eaeaea" }} />
 
-          {activeTab === "byAuthor" && (
-            <div style={{ padding: "16px 0" }}>
-              <select
-                value={selectedAuthor}
-                onChange={(e) => { setSelectedAuthor(e.target.value); setPage(1); }}
-                style={{
-                  padding: "6px 12px",
-                  border: "1px solid #eaeaea",
-                  borderRadius: "6px",
-                  fontSize: "0.875rem",
-                  color: "#000",
-                  background: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                <option value="">All authors</option>
-                {authors.map((author) => (
-                  <option key={author} value={author}>{author}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
           {activeTab === "all" && (
             <IssuesOverTimeChart byDay={data.stats.byDay} />
           )}
@@ -144,6 +116,9 @@ export function App() {
             page={page}
             totalPages={totalPages}
             onPageChange={setPage}
+            authors={authors}
+            selectedAuthor={selectedAuthor}
+            onAuthorChange={(author) => { setSelectedAuthor(author); setPage(1); }}
           />
         </>
       )}

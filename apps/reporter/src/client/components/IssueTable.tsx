@@ -5,9 +5,12 @@ interface Props {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  authors?: string[];
+  selectedAuthor?: string;
+  onAuthorChange?: (author: string) => void;
 }
 
-export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
+export function IssueTable({ issues, page, totalPages, onPageChange, authors, selectedAuthor, onAuthorChange }: Props) {
   if (issues.length === 0) {
     return <p style={{ color: "#666", padding: "24px 0", fontSize: "0.875rem" }}>No issues found.</p>;
   }
@@ -20,7 +23,31 @@ export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
             <th style={thStyle}>#</th>
             <th style={thStyle}>Title</th>
             <th style={thStyle}>State</th>
-            <th style={thStyle}>Author</th>
+            <th style={thStyle}>
+              {authors && onAuthorChange ? (
+                <select
+                  value={selectedAuthor ?? ""}
+                  onChange={(e) => onAuthorChange(e.target.value)}
+                  style={{
+                    font: "inherit",
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    color: selectedAuthor ? "#000" : "#666",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  <option value="">Author</option>
+                  {authors.map((a) => (
+                    <option key={a} value={a}>{a}</option>
+                  ))}
+                </select>
+              ) : "Author"}
+            </th>
             <th style={thStyle}>Created</th>
             <th style={thStyle}>Closed</th>
           </tr>
