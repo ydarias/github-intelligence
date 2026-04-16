@@ -127,33 +127,43 @@ export function App() {
   const totalPages = Math.ceil(filteredIssues.length / PAGE_SIZE);
 
   return (
-    <main style={{ padding: "40px 24px", fontFamily: "system-ui, -apple-system, sans-serif", maxWidth: "1200px", margin: "0 auto", color: "#000" }}>
-      <h1 style={{ fontSize: "1.25rem", fontWeight: 600, margin: "0 0 32px" }}>GitHub Issues Reporter</h1>
+    <div className="min-h-screen bg-surface text-text">
+      <header className="border-b border-border px-8 py-4">
+        <h1 className="text-sm font-semibold tracking-widest uppercase text-muted">
+          GitHub Issues Reporter
+        </h1>
+      </header>
 
-      {status === "loading" && <p style={{ color: "#666" }}>Loading…</p>}
-      {status === "error" && <p style={{ color: "#f00" }}>{error}</p>}
+      <main className="mx-auto max-w-7xl px-8 py-8">
+        {status === "loading" && (
+          <p className="text-muted text-sm animate-pulse">Loading…</p>
+        )}
+        {status === "error" && (
+          <p className="text-red-400 text-sm">{error}</p>
+        )}
 
-      {status === "success" && data !== null && (
-        <>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "32px" }}>
-            <SearchForm
-              authors={authors}
-              assignees={assignees}
-              onSearch={handleSearch}
+        {status === "success" && data !== null && (
+          <>
+            <div className="grid grid-cols-2 gap-6 mb-8">
+              <SearchForm
+                authors={authors}
+                assignees={assignees}
+                onSearch={handleSearch}
+              />
+              <StatsSummary stats={filteredStats!} />
+            </div>
+
+            <IssuesOverTimeChart byDay={filteredStats!.byDay} />
+
+            <IssueTable
+              issues={pagedIssues}
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
             />
-            <StatsSummary stats={filteredStats!} />
-          </div>
-
-          <IssuesOverTimeChart byDay={filteredStats!.byDay} />
-
-          <IssueTable
-            issues={pagedIssues}
-            page={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </>
-      )}
-    </main>
+          </>
+        )}
+      </main>
+    </div>
   );
 }

@@ -17,17 +17,49 @@ export function IssuesOverTimeChart({ byDay }: Props) {
   if (byDay.length === 0) return null;
 
   return (
-    <div style={{ margin: "24px 0" }}>
-      <p style={{ fontSize: "0.6875rem", fontWeight: 500, letterSpacing: "0.08em", color: "#666", textTransform: "uppercase", margin: "0 0 12px" }}>Issues &amp; PRs Over Time</p>
+    <div className="rounded-xl border border-border bg-panel p-5 mb-6">
+      <p className="text-xs font-medium uppercase tracking-widest text-muted mb-4">
+        Issues &amp; PRs Over Time
+      </p>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={byDay}>
-          <CartesianGrid stroke="#eaeaea" strokeDasharray="0" vertical={false} />
-          <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#666" }} axisLine={false} tickLine={false} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#666" }} axisLine={false} tickLine={false} />
-          <Tooltip contentStyle={{ border: "1px solid #eaeaea", borderRadius: "6px", fontSize: "0.8125rem" }} />
-          <Legend wrapperStyle={{ fontSize: "0.75rem", color: "#666" }} />
-          <Line type="monotone" dataKey="issues" stroke="#000" dot={false} strokeWidth={1.5} />
-          <Line type="monotone" dataKey="prs" stroke="#7e22ce" dot={false} strokeWidth={1.5} />
+          <CartesianGrid stroke="oklch(0.28 0 0)" strokeDasharray="0" vertical={false} />
+          <XAxis
+            dataKey="date"
+            tick={{ fontSize: 11, fill: "oklch(0.55 0 0)" }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            allowDecimals={false}
+            tick={{ fontSize: 11, fill: "oklch(0.55 0 0)" }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <Tooltip
+            contentStyle={{
+              border: "1px solid oklch(0.28 0 0)",
+              borderRadius: "8px",
+              fontSize: "0.8125rem",
+              background: "oklch(0.18 0 0)",
+              color: "oklch(0.97 0 0)",
+            }}
+          />
+          <Legend wrapperStyle={{ fontSize: "0.75rem", color: "oklch(0.55 0 0)" }} />
+          <Line
+            type="monotone"
+            dataKey="issues"
+            stroke="oklch(0.70 0.17 162)"
+            dot={false}
+            strokeWidth={2}
+          />
+          <Line
+            type="monotone"
+            dataKey="prs"
+            stroke="oklch(0.70 0.18 295)"
+            dot={false}
+            strokeWidth={2}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>

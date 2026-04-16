@@ -1,5 +1,10 @@
 import { useState } from "react";
-
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
+import { Label } from "./ui/label.js";
+import { Input } from "./ui/input.js";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select.js";
+import { Checkbox } from "./ui/checkbox.js";
+import { Button } from "./ui/button.js";
 
 export interface SearchFilters {
   type: "all" | "issue" | "pr";
@@ -38,127 +43,101 @@ export function SearchForm({ authors, assignees, onSearch }: Props) {
   }
 
   return (
-    <div style={{ border: "1px solid #eaeaea", borderRadius: "8px" }}>
-      <div style={{ padding: "12px 16px", borderBottom: "1px solid #eaeaea" }}>
-        <span style={{ fontSize: "0.6875rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#666" }}>Filter</span>
-      </div>
-
-      <div style={{ padding: "16px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: "12px 16px", alignItems: "center" }}>
-          <label style={labelStyle}>Type</label>
-          <select
+    <Card>
+      <CardHeader>
+        <CardTitle>Filter</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-[100px_1fr] gap-x-4 gap-y-3 items-center">
+          <Label htmlFor="filter-type">Type</Label>
+          <Select
             value={filters.type}
-            onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value as SearchFilters["type"] }))}
-            style={selectStyle}
+            onValueChange={(v) => setFilters((f) => ({ ...f, type: v as SearchFilters["type"] }))}
           >
-            <option value="all">All</option>
-            <option value="issue">Issues</option>
-            <option value="pr">PRs</option>
-          </select>
+            <SelectTrigger id="filter-type">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="issue">Issues</SelectItem>
+              <SelectItem value="pr">PRs</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <label style={labelStyle}>Title</label>
-          <input
-            type="text"
+          <Label htmlFor="filter-title">Title</Label>
+          <Input
+            id="filter-title"
             value={filters.title}
             onChange={(e) => setFilters((f) => ({ ...f, title: e.target.value }))}
-            style={inputStyle}
+            placeholder="Search…"
           />
 
-          <label style={labelStyle}>State</label>
-          <select
+          <Label htmlFor="filter-state">State</Label>
+          <Select
             value={filters.state}
-            onChange={(e) => setFilters((f) => ({ ...f, state: e.target.value as SearchFilters["state"] }))}
-            style={selectStyle}
+            onValueChange={(v) => setFilters((f) => ({ ...f, state: v as SearchFilters["state"] }))}
           >
-            <option value="all">All</option>
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-          </select>
+            <SelectTrigger id="filter-state">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <label style={labelStyle}>Author</label>
-          <select
+          <Label htmlFor="filter-author">Author</Label>
+          <Select
             value={filters.author}
-            onChange={(e) => setFilters((f) => ({ ...f, author: e.target.value }))}
-            style={selectStyle}
+            onValueChange={(v) => setFilters((f) => ({ ...f, author: v === "__all__" ? "" : v }))}
           >
-            <option value="">All</option>
-            {authors.map((a) => (
-              <option key={a} value={a}>{a}</option>
-            ))}
-          </select>
+            <SelectTrigger id="filter-author">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All</SelectItem>
+              {authors.map((a) => (
+                <SelectItem key={a} value={a}>{a}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <label style={labelStyle}>Assignee</label>
-          <select
+          <Label htmlFor="filter-assignee">Assignee</Label>
+          <Select
             value={filters.assignee}
-            onChange={(e) => setFilters((f) => ({ ...f, assignee: e.target.value }))}
-            style={selectStyle}
+            onValueChange={(v) => setFilters((f) => ({ ...f, assignee: v === "__all__" ? "" : v }))}
           >
-            <option value="">All</option>
-            {assignees.map((a) => (
-              <option key={a} value={a}>{a}</option>
-            ))}
-          </select>
+            <SelectTrigger id="filter-assignee">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All</SelectItem>
+              {assignees.map((a) => (
+                <SelectItem key={a} value={a}>{a}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <label style={labelStyle}>One Day Issue?</label>
-          <input
-            type="checkbox"
+          <Label htmlFor="filter-oneday">One Day?</Label>
+          <Checkbox
+            id="filter-oneday"
             checked={filters.oneDayOnly}
-            onChange={(e) => setFilters((f) => ({ ...f, oneDayOnly: e.target.checked }))}
-            style={{ justifySelf: "start" }}
+            onCheckedChange={(checked) =>
+              setFilters((f) => ({ ...f, oneDayOnly: checked === true }))
+            }
           />
         </div>
 
-        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "16px" }}>
-          <button onClick={handleReset} style={resetBtnStyle}>Reset</button>
-          <button onClick={handleSearch} style={searchBtnStyle}>Search</button>
+        <div className="flex gap-2 justify-end pt-2">
+          <Button variant="outline" size="sm" onClick={handleReset}>
+            Reset
+          </Button>
+          <Button size="sm" onClick={handleSearch}>
+            Search
+          </Button>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
-
-const labelStyle: React.CSSProperties = {
-  fontSize: "0.6875rem",
-  fontWeight: 500,
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-  color: "#666",
-};
-
-const selectStyle: React.CSSProperties = {
-  padding: "6px 8px",
-  border: "1px solid #eaeaea",
-  borderRadius: "6px",
-  fontSize: "0.875rem",
-  background: "#fff",
-  color: "#000",
-};
-
-const inputStyle: React.CSSProperties = {
-  padding: "6px 8px",
-  border: "1px solid #eaeaea",
-  borderRadius: "6px",
-  fontSize: "0.875rem",
-  color: "#000",
-};
-
-const resetBtnStyle: React.CSSProperties = {
-  padding: "6px 16px",
-  border: "1px solid #eaeaea",
-  borderRadius: "6px",
-  background: "#fff",
-  color: "#000",
-  fontSize: "0.875rem",
-  cursor: "pointer",
-};
-
-const searchBtnStyle: React.CSSProperties = {
-  padding: "6px 16px",
-  border: "1px solid #000",
-  borderRadius: "6px",
-  background: "#000",
-  color: "#fff",
-  fontSize: "0.875rem",
-  fontWeight: 600,
-  cursor: "pointer",
-};

@@ -1,4 +1,5 @@
 import type { IssueStats } from "../types.js";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
 
 interface Props {
   stats: IssueStats;
@@ -13,87 +14,80 @@ export function StatsSummary({ stats }: Props) {
   const { timeToClosePercentiles: p } = stats;
 
   return (
-    <div style={{ border: "1px solid #eaeaea", borderRadius: "8px" }}>
-      <div style={{ padding: "12px 16px", borderBottom: "1px solid #eaeaea" }}>
-        <span style={{ fontSize: "0.6875rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#666" }}>Stats</span>
-      </div>
-
-      <div style={{ padding: "16px" }}>
-        <table style={{ borderCollapse: "collapse", fontSize: "0.875rem", width: "100%" }}>
-          <thead>
-            <tr>
-              <th style={headerCell}></th>
-              <th style={headerCell}>Total</th>
-              <th style={headerCell}>Open</th>
-              <th style={headerCell}>Closed</th>
-              <th style={headerCell}>Avg / day</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={{ ...labelCell, fontWeight: 500 }}>Issues</td>
-              <td style={valueCell}>{stats.total}</td>
-              <td style={valueCell}>{stats.open}</td>
-              <td style={valueCell}>{stats.closed}</td>
-              <td style={valueCell}>{stats.avgIssuesPerDay.toFixed(1)}</td>
-            </tr>
-            <tr>
-              <td style={{ ...labelCell, fontWeight: 500 }}>PRs</td>
-              <td style={valueCell}>{stats.totalPRs}</td>
-              <td style={valueCell}>{stats.openPRs}</td>
-              <td style={valueCell}>{stats.closedPRs}</td>
-              <td style={valueCell}>{stats.avgPRsPerDay.toFixed(1)}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #eaeaea" }}>
-          <div style={{ fontSize: "0.6875rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "#666", marginBottom: "8px" }}>
-            Time to close
-          </div>
-          <table style={{ borderCollapse: "collapse", fontSize: "0.875rem" }}>
-            <thead>
-              <tr>
-                <th style={headerCell}>P50</th>
-                <th style={headerCell}>P75</th>
-                <th style={headerCell}>P90</th>
-                <th style={headerCell}>P99</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style={valueCell}>{p ? formatHours(p.p50) : "—"}</td>
-                <td style={valueCell}>{p ? formatHours(p.p75) : "—"}</td>
-                <td style={valueCell}>{p ? formatHours(p.p90) : "—"}</td>
-                <td style={valueCell}>{p ? formatHours(p.p99) : "—"}</td>
-              </tr>
-            </tbody>
-          </table>
+    <Card>
+      <CardHeader>
+        <CardTitle>Stats</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <MetricGroup
+            label="Issues"
+            total={stats.total}
+            open={stats.open}
+            closed={stats.closed}
+            avg={stats.avgIssuesPerDay}
+            accentClass="text-emerald"
+          />
+          <MetricGroup
+            label="Pull Requests"
+            total={stats.totalPRs}
+            open={stats.openPRs}
+            closed={stats.closedPRs}
+            avg={stats.avgPRsPerDay}
+            accentClass="text-accent"
+          />
         </div>
+
+        <div>
+          <p className="text-xs font-medium uppercase tracking-widest text-muted mb-3">
+            Time to close
+          </p>
+          <div className="grid grid-cols-4 gap-3">
+            {(["p50", "p75", "p90", "p99"] as const).map((key) => (
+              <div key={key} className="rounded-lg border border-border bg-surface p-3 text-center">
+                <p className="text-[10px] uppercase tracking-widest text-muted mb-1">{key.toUpperCase()}</p>
+                <p className="text-xl font-bold text-text">
+                  {p ? formatHours(p[key]) : "—"}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface MetricGroupProps {
+  label: string;
+  total: number;
+  open: number;
+  closed: number;
+  avg: number;
+  accentClass: string;
+}
+
+function MetricGroup({ label, total, open, closed, avg, accentClass }: MetricGroupProps) {
+  return (
+    <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
+      <p className={`text-xs font-semibold uppercase tracking-widest ${accentClass}`}>{label}</p>
+      <div className="grid grid-cols-2 gap-y-2">
+        <Metric label="Total" value={total} large />
+        <Metric label="Avg/day" value={avg.toFixed(1)} />
+        <Metric label="Open" value={open} />
+        <Metric label="Closed" value={closed} />
       </div>
     </div>
   );
 }
 
-const headerCell: React.CSSProperties = {
-  textAlign: "left",
-  padding: "4px 24px 4px 0",
-  fontSize: "0.6875rem",
-  fontWeight: 500,
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-  color: "#666",
-};
-
-const labelCell: React.CSSProperties = {
-  padding: "4px 24px 4px 0",
-  color: "#666",
-  fontSize: "0.875rem",
-};
-
-const valueCell: React.CSSProperties = {
-  padding: "4px 24px 4px 0",
-  fontSize: "1.5rem",
-  fontWeight: 600,
-  color: "#000",
-};
+function Metric({ label, value, large }: { label: string; value: number | string; large?: boolean }) {
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-widest text-muted">{label}</p>
+      <p className={large ? "text-3xl font-bold text-text" : "text-lg font-semibold text-text"}>
+        {value}
+      </p>
+    </div>
+  );
+}
