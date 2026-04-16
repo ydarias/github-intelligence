@@ -8,9 +8,12 @@ interface Props {
   authors?: string[];
   selectedAuthor?: string;
   onAuthorChange?: (author: string) => void;
+  assignees?: string[];
+  selectedAssignee?: string;
+  onAssigneeChange?: (assignee: string) => void;
 }
 
-export function IssueTable({ issues, page, totalPages, onPageChange, authors, selectedAuthor, onAuthorChange }: Props) {
+export function IssueTable({ issues, page, totalPages, onPageChange, authors, selectedAuthor, onAuthorChange, assignees, selectedAssignee, onAssigneeChange }: Props) {
   if (issues.length === 0) {
     return <p style={{ color: "#666", padding: "24px 0", fontSize: "0.875rem" }}>No issues found.</p>;
   }
@@ -48,7 +51,31 @@ export function IssueTable({ issues, page, totalPages, onPageChange, authors, se
                 </select>
               ) : "Author"}
             </th>
-            <th style={thStyle}>Assignees</th>
+            <th style={thStyle}>
+              {assignees && onAssigneeChange ? (
+                <select
+                  value={selectedAssignee ?? ""}
+                  onChange={(e) => onAssigneeChange(e.target.value)}
+                  style={{
+                    font: "inherit",
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    color: selectedAssignee ? "#000" : "#666",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  <option value="">Assignees</option>
+                  {assignees.map((a) => (
+                    <option key={a} value={a}>{a}</option>
+                  ))}
+                </select>
+              ) : "Assignees"}
+            </th>
             <th style={thStyle}>Created</th>
             <th style={thStyle}>Closed</th>
           </tr>

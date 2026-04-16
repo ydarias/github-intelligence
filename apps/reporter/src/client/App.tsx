@@ -24,6 +24,7 @@ export function App() {
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<Tab>("all");
   const [selectedAuthor, setSelectedAuthor] = useState<string>("");
+  const [selectedAssignee, setSelectedAssignee] = useState<string>("");
 
   useEffect(() => {
     fetchIssues()
@@ -41,10 +42,15 @@ export function App() {
     setActiveTab(tab);
     setPage(1);
     setSelectedAuthor("");
+    setSelectedAssignee("");
   }
 
   const authors = data
     ? Array.from(new Set(data.issues.map((i) => i.author))).sort()
+    : [];
+
+  const assignees = data
+    ? Array.from(new Set(data.issues.flatMap((i) => i.assignees ?? []))).sort()
     : [];
 
   const filteredIssues = data
@@ -52,6 +58,7 @@ export function App() {
         if (activeTab === "sameDay" && !(i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10))) return false;
         if (activeTab === "open" && i.state !== "open") return false;
         if (selectedAuthor !== "" && i.author !== selectedAuthor) return false;
+        if (selectedAssignee !== "" && !(i.assignees ?? []).includes(selectedAssignee)) return false;
         return true;
       })
     : [];
@@ -119,6 +126,9 @@ export function App() {
             authors={authors}
             selectedAuthor={selectedAuthor}
             onAuthorChange={(author) => { setSelectedAuthor(author); setPage(1); }}
+            assignees={assignees}
+            selectedAssignee={selectedAssignee}
+            onAssigneeChange={(assignee) => { setSelectedAssignee(assignee); setPage(1); }}
           />
         </>
       )}
