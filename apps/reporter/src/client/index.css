@@ -19,3 +19,13 @@ body {
   background-color: var(--color-surface);
   color: var(--color-text);
 }
+
+[data-theme="light"] {
+  --color-surface: oklch(0.97 0 0);
+  --color-panel: oklch(1 0 0);
+  --color-border: oklch(0.88 0 0);
+  --color-muted: oklch(0.50 0 0);
+  --color-text: oklch(0.15 0 0);
+  --color-accent: oklch(0.50 0.20 295);
+  --color-emerald: oklch(0.42 0.18 162);
+}

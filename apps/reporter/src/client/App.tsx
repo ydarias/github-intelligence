@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X, List } from "lucide-react";
+import { X, List, Sun, Moon } from "lucide-react";
 import { fetchIssues } from "./api.js";
 import type { IssuesResponse, IssueStats, GitHubIssueDTO, TimeToClosePercentiles } from "./types.js";
 import { StatsSummary } from "./components/StatsSummary.js";
@@ -85,6 +85,17 @@ export function App() {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const [showIssues, setShowIssues] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">(
+    () => (localStorage.getItem("theme") as "dark" | "light") ?? "dark"
+  );
+
+  function toggleTheme() {
+    setTheme((t) => {
+      const next = t === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", next);
+      return next;
+    });
+  }
 
   useEffect(() => {
     fetchIssues()
@@ -129,11 +140,18 @@ export function App() {
   const totalPages = Math.ceil(filteredIssues.length / PAGE_SIZE);
 
   return (
-    <div className="min-h-screen bg-surface text-text">
-      <header className="border-b border-border px-8 py-4">
+    <div data-theme={theme} className="min-h-screen bg-surface text-text">
+      <header className="border-b border-border px-8 py-4 flex items-center justify-between">
         <h1 className="text-sm font-semibold tracking-widest uppercase text-muted">
           GitHub Issues Reporter
         </h1>
+        <button
+          onClick={toggleTheme}
+          className="rounded-md p-2 text-muted transition-colors hover:bg-panel hover:text-text"
+          aria-label="Toggle theme"
+        >
+          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
       </header>
 
       <main className="mx-auto max-w-7xl px-8 py-8">
