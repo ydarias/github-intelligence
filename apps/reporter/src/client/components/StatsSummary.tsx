@@ -2,8 +2,6 @@ import type { IssueStats } from "../types.js";
 
 interface Props {
   stats: IssueStats;
-  extraExpanded: boolean;
-  onToggleExtra: () => void;
 }
 
 function formatHours(hours: number): string {
@@ -11,46 +9,40 @@ function formatHours(hours: number): string {
   return `${(hours / 24).toFixed(1)}d`;
 }
 
-export function StatsSummary({ stats, extraExpanded, onToggleExtra }: Props) {
+export function StatsSummary({ stats }: Props) {
   return (
-    <div style={{ margin: "0 0 32px" }}>
-      <table style={{ borderCollapse: "collapse", fontSize: "0.875rem" }}>
-        <thead>
-          <tr>
-            <th style={headerCell}></th>
-            <th style={headerCell}>Total</th>
-            <th style={headerCell}>Open</th>
-            <th style={headerCell}>Closed</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style={{ ...labelCell, fontWeight: 500 }}>Issues</td>
-            <td style={valueCell}>{stats.total}</td>
-            <td style={valueCell}>{stats.open}</td>
-            <td style={valueCell}>{stats.closed}</td>
-          </tr>
-          <tr>
-            <td style={{ ...labelCell, fontWeight: 500 }}>PRs</td>
-            <td style={valueCell}>{stats.totalPRs}</td>
-            <td style={valueCell}>{stats.openPRs}</td>
-            <td style={valueCell}>{stats.closedPRs}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "12px" }}>
-        <button
-          onClick={onToggleExtra}
-          style={{ background: "none", border: "1px solid #eaeaea", borderRadius: "4px", width: "24px", height: "24px", cursor: "pointer", fontSize: "1rem", lineHeight: 1, color: "#666", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
-        >
-          {extraExpanded ? "−" : "+"}
-        </button>
-        {!extraExpanded && <span style={{ fontSize: "0.75rem", color: "#999" }}>Show extra stats</span>}
+    <div style={{ border: "1px solid #eaeaea", borderRadius: "8px" }}>
+      <div style={{ padding: "12px 16px", borderBottom: "1px solid #eaeaea" }}>
+        <span style={{ fontSize: "0.6875rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#666" }}>Stats</span>
       </div>
 
-      {extraExpanded && (
-        <div style={{ display: "flex", gap: "48px", marginTop: "12px" }}>
+      <div style={{ padding: "16px" }}>
+        <table style={{ borderCollapse: "collapse", fontSize: "0.875rem", width: "100%" }}>
+          <thead>
+            <tr>
+              <th style={headerCell}></th>
+              <th style={headerCell}>Total</th>
+              <th style={headerCell}>Open</th>
+              <th style={headerCell}>Closed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style={{ ...labelCell, fontWeight: 500 }}>Issues</td>
+              <td style={valueCell}>{stats.total}</td>
+              <td style={valueCell}>{stats.open}</td>
+              <td style={valueCell}>{stats.closed}</td>
+            </tr>
+            <tr>
+              <td style={{ ...labelCell, fontWeight: 500 }}>PRs</td>
+              <td style={valueCell}>{stats.totalPRs}</td>
+              <td style={valueCell}>{stats.openPRs}</td>
+              <td style={valueCell}>{stats.closedPRs}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style={{ display: "flex", gap: "32px", marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #eaeaea" }}>
           <div>
             <div style={extraLabel}>Avg time to close</div>
             <div style={extraValue}>
@@ -64,7 +56,7 @@ export function StatsSummary({ stats, extraExpanded, onToggleExtra }: Props) {
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

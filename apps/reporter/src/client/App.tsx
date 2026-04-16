@@ -68,7 +68,6 @@ export function App() {
   const [data, setData] = useState<IssuesResponse | null>(null);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
-  const [statsExpanded, setStatsExpanded] = useState(false);
 
   useEffect(() => {
     fetchIssues()
@@ -121,17 +120,14 @@ export function App() {
 
       {status === "success" && data !== null && (
         <>
-          <SearchForm
-            authors={authors}
-            assignees={assignees}
-            onSearch={handleSearch}
-          />
-
-          <StatsSummary
-            stats={filteredStats!}
-            extraExpanded={statsExpanded}
-            onToggleExtra={() => setStatsExpanded((e) => !e)}
-          />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "32px" }}>
+            <SearchForm
+              authors={authors}
+              assignees={assignees}
+              onSearch={handleSearch}
+            />
+            <StatsSummary stats={filteredStats!} />
+          </div>
 
           <IssuesOverTimeChart byDay={filteredStats!.byDay} />
 
