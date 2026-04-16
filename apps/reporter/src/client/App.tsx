@@ -4,27 +4,20 @@ import type { IssuesResponse } from "./types.js";
 import { StatsSummary } from "./components/StatsSummary.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
+import { SearchForm, DEFAULT_FILTERS } from "./components/SearchForm.js";
+import type { SearchFilters } from "./components/SearchForm.js";
 
 const PAGE_SIZE = 50;
 
 type Status = "loading" | "error" | "success";
-type Tab = "all" | "sameDay" | "open" | "byAuthor";
-
-const TABS: Array<{ id: Tab; label: string }> = [
-  { id: "all", label: "All Issues" },
-  { id: "sameDay", label: "Same Day" },
-  { id: "open", label: "Still Open" },
-  { id: "byAuthor", label: "By Author" },
-];
 
 export function App() {
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<IssuesResponse | null>(null);
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<Tab>("all");
-  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
-  const [selectedAssignee, setSelectedAssignee] = useState<string>("");
+  const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
+  const [statsExpanded, setStatsExpanded] = useState(false);
 
   useEffect(() => {
     fetchIssues()
@@ -38,11 +31,9 @@ export function App() {
       });
   }, []);
 
-  function handleTabChange(tab: Tab) {
-    setActiveTab(tab);
+  function handleSearch(newFilters: SearchFilters) {
+    setFilters(newFilters);
     setPage(1);
-    setSelectedAuthor("");
-    setSelectedAssignee("");
   }
 
   const authors = data
@@ -55,10 +46,12 @@ export function App() {
 
   const filteredIssues = data
     ? data.issues.filter((i) => {
-        if (activeTab === "sameDay" && !(i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10))) return false;
-        if (activeTab === "open" && i.state !== "open") return false;
-        if (selectedAuthor !== "" && i.author !== selectedAuthor) return false;
-        if (selectedAssignee !== "" && !(i.assignees ?? []).includes(selectedAssignee)) return false;
+        if (filters.type !== "all" && i.type !== filters.type) return false;
+        if (filters.title !== "" && !i.title.toLowerCase().includes(filters.title.toLowerCase())) return false;
+        if (filters.state !== "all" && i.state !== filters.state) return false;
+        if (filters.author !== "" && i.author !== filters.author) return false;
+        if (filters.assignee !== "" && !(i.assignees ?? []).includes(filters.assignee)) return false;
+        if (filters.oneDayOnly && !(i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10))) return false;
         return true;
       })
     : [];
@@ -75,60 +68,25 @@ export function App() {
 
       {status === "success" && data !== null && (
         <>
-          <StatsSummary items={
-            activeTab === "all"
-              ? selectedAuthor
-                ? [{ label: selectedAuthor, value: filteredIssues.length }]
-                : [
-                    { label: "Total", value: data.stats.total },
-                    { label: "Open", value: data.stats.open },
-                    { label: "Closed", value: data.stats.closed },
-                  ]
-              : activeTab === "byAuthor"
-                ? [{ label: selectedAuthor || "All Authors", value: filteredIssues.length }]
-                : [{ label: activeTab === "sameDay" ? "Same Day" : "Still Open", value: filteredIssues.length }]
-          } />
+          <SearchForm
+            authors={authors}
+            assignees={assignees}
+            onSearch={handleSearch}
+          />
 
-          <div style={{ borderTop: "1px solid #eaeaea", margin: "32px 0 0" }} />
+          <StatsSummary
+            stats={data.stats}
+            extraExpanded={statsExpanded}
+            onToggleExtra={() => setStatsExpanded((e) => !e)}
+          />
 
-          <nav style={{ display: "flex", gap: "0", margin: "0 0 0" }}>
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  borderBottom: activeTab === tab.id ? "2px solid #000" : "2px solid transparent",
-                  padding: "12px 20px",
-                  fontSize: "0.875rem",
-                  fontWeight: activeTab === tab.id ? 600 : 400,
-                  color: activeTab === tab.id ? "#000" : "#666",
-                  cursor: "pointer",
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-
-          <div style={{ borderTop: "1px solid #eaeaea" }} />
-
-          {activeTab === "all" && (
-            <IssuesOverTimeChart byDay={data.stats.byDay} />
-          )}
+          <IssuesOverTimeChart byDay={data.stats.byDay} />
 
           <IssueTable
             issues={pagedIssues}
             page={page}
             totalPages={totalPages}
             onPageChange={setPage}
-            authors={authors}
-            selectedAuthor={selectedAuthor}
-            onAuthorChange={(author) => { setSelectedAuthor(author); setPage(1); }}
-            assignees={assignees}
-            selectedAssignee={selectedAssignee}
-            onAssigneeChange={(assignee) => { setSelectedAssignee(assignee); setPage(1); }}
           />
         </>
       )}

@@ -17,6 +17,11 @@ export interface IssueStats {
   total: number;
   open: number;
   closed: number;
+  totalPRs: number;
+  openPRs: number;
+  closedPRs: number;
+  avgTimeToCloseHours: number | null;
+  medianTimeToCloseHours: number | null;
   byDay: Array<{ date: string; issues: number; prs: number }>;
 }
 
