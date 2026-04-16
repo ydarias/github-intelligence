@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { X, List } from "lucide-react";
 import { fetchIssues } from "./api.js";
 import type { IssuesResponse, IssueStats, GitHubIssueDTO, TimeToClosePercentiles } from "./types.js";
 import { StatsSummary } from "./components/StatsSummary.js";
@@ -83,6 +84,7 @@ export function App() {
   const [data, setData] = useState<IssuesResponse | null>(null);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
+  const [showIssues, setShowIssues] = useState(false);
 
   useEffect(() => {
     fetchIssues()
@@ -155,12 +157,55 @@ export function App() {
 
             <IssuesOverTimeChart byDay={filteredStats!.byDay} />
 
-            <IssueTable
-              issues={pagedIssues}
-              page={page}
-              totalPages={totalPages}
-              onPageChange={setPage}
-            />
+            {/* Floating toggle button */}
+            <button
+              onClick={() => setShowIssues(true)}
+              className="fixed bottom-8 right-8 flex items-center gap-2 rounded-full border border-border bg-panel px-5 py-3 text-sm font-medium text-text shadow-xl transition-colors hover:bg-surface hover:border-accent hover:text-accent"
+            >
+              <List className="h-4 w-4" />
+              Issues
+              <span className="ml-1 rounded-full bg-accent/20 px-2 py-0.5 text-xs font-semibold text-accent">
+                {filteredIssues.length}
+              </span>
+            </button>
+
+            {/* Backdrop */}
+            {showIssues && (
+              <div
+                className="fixed inset-0 z-40 bg-surface/60 backdrop-blur-sm"
+                onClick={() => setShowIssues(false)}
+              />
+            )}
+
+            {/* Drawer */}
+            <div
+              className={`fixed top-0 right-0 z-50 h-full w-[70%] max-w-5xl overflow-y-auto border-l border-border bg-surface shadow-2xl transition-transform duration-300 ease-in-out ${
+                showIssues ? "translate-x-0" : "translate-x-full"
+              }`}
+            >
+              <div className="flex items-center justify-between border-b border-border px-6 py-4">
+                <span className="text-xs font-semibold uppercase tracking-widest text-muted">
+                  Issues &amp; Pull Requests
+                  <span className="ml-3 rounded-full bg-accent/20 px-2 py-0.5 text-accent">
+                    {filteredIssues.length}
+                  </span>
+                </span>
+                <button
+                  onClick={() => setShowIssues(false)}
+                  className="rounded-md p-1 text-muted transition-colors hover:bg-panel hover:text-text"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="px-6 py-4">
+                <IssueTable
+                  issues={pagedIssues}
+                  page={page}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                />
+              </div>
+            </div>
           </>
         )}
       </main>
