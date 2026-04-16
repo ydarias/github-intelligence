@@ -1,32 +1,46 @@
 import { useEffect, useState } from "react";
 import { fetchIssues } from "./api.js";
-import type { IssuesResponse, IssueStats, GitHubIssueDTO } from "./types.js";
+import type { IssuesResponse, IssueStats, GitHubIssueDTO, TimeToClosePercentiles } from "./types.js";
 import { StatsSummary } from "./components/StatsSummary.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
 import { SearchForm, DEFAULT_FILTERS } from "./components/SearchForm.js";
 import type { SearchFilters } from "./components/SearchForm.js";
 
+function nearestRankPercentile(sorted: number[], p: number): number {
+  const rank = Math.ceil(p / 100 * sorted.length);
+  return sorted[rank - 1] ?? 0;
+}
+
+function calendarDaysInRange(dates: string[]): number {
+  if (dates.length === 0) return 1;
+  const min = dates.reduce((a, b) => (a < b ? a : b));
+  const max = dates.reduce((a, b) => (a > b ? a : b));
+  return Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+}
+
 function computeFilteredStats(items: GitHubIssueDTO[], byDayFromServer: IssueStats["byDay"]): IssueStats {
   const issues = items.filter((i) => i.type === "issue");
   const prs = items.filter((i) => i.type === "pr");
 
-  const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
-  const timeToCloseHours = closedItems.map((i) => {
-    const ms = new Date(i.closedAt!).getTime() - new Date(i.createdAt).getTime();
-    return ms / (1000 * 60 * 60);
-  });
+  const allDates = items.map((i) => i.createdAt.slice(0, 10));
+  const totalDays = calendarDaysInRange(allDates);
+  const avgIssuesPerDay = issues.length / totalDays;
+  const avgPRsPerDay = prs.length / totalDays;
 
-  let avgTimeToCloseHours: number | null = null;
-  let medianTimeToCloseHours: number | null = null;
-  if (timeToCloseHours.length > 0) {
-    avgTimeToCloseHours = timeToCloseHours.reduce((sum, h) => sum + h, 0) / timeToCloseHours.length;
-    const sorted = [...timeToCloseHours].sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    medianTimeToCloseHours = sorted.length % 2 === 0
-      ? ((sorted[mid - 1] ?? 0) + (sorted[mid] ?? 0)) / 2
-      : (sorted[mid] ?? 0);
-  }
+  const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
+  const timeToCloseHours = closedItems
+    .map((i) => (new Date(i.closedAt!).getTime() - new Date(i.createdAt).getTime()) / (1000 * 60 * 60))
+    .sort((a, b) => a - b);
+
+  const timeToClosePercentiles: TimeToClosePercentiles | null = timeToCloseHours.length > 0
+    ? {
+        p50: nearestRankPercentile(timeToCloseHours, 50),
+        p75: nearestRankPercentile(timeToCloseHours, 75),
+        p90: nearestRankPercentile(timeToCloseHours, 90),
+        p99: nearestRankPercentile(timeToCloseHours, 99),
+      }
+    : null;
 
   const issuesByDay = new Map<string, number>();
   const prsByDay = new Map<string, number>();
@@ -52,8 +66,9 @@ function computeFilteredStats(items: GitHubIssueDTO[], byDayFromServer: IssueSta
     totalPRs: prs.length,
     openPRs: prs.filter((i) => i.state === "open").length,
     closedPRs: prs.filter((i) => i.state === "closed").length,
-    avgTimeToCloseHours,
-    medianTimeToCloseHours,
+    avgIssuesPerDay,
+    avgPRsPerDay,
+    timeToClosePercentiles,
     byDay,
   };
 }

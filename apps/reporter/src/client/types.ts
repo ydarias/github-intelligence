@@ -13,6 +13,13 @@ export interface GitHubIssueDTO {
   type: "issue" | "pr";
 }
 
+export interface TimeToClosePercentiles {
+  p50: number;
+  p75: number;
+  p90: number;
+  p99: number;
+}
+
 export interface IssueStats {
   total: number;
   open: number;
@@ -20,8 +27,9 @@ export interface IssueStats {
   totalPRs: number;
   openPRs: number;
   closedPRs: number;
-  avgTimeToCloseHours: number | null;
-  medianTimeToCloseHours: number | null;
+  avgIssuesPerDay: number;
+  avgPRsPerDay: number;
+  timeToClosePercentiles: TimeToClosePercentiles | null;
   byDay: Array<{ date: string; issues: number; prs: number }>;
 }
 

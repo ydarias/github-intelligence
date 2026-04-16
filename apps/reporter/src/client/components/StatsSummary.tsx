@@ -10,6 +10,8 @@ function formatHours(hours: number): string {
 }
 
 export function StatsSummary({ stats }: Props) {
+  const { timeToClosePercentiles: p } = stats;
+
   return (
     <div style={{ border: "1px solid #eaeaea", borderRadius: "8px" }}>
       <div style={{ padding: "12px 16px", borderBottom: "1px solid #eaeaea" }}>
@@ -24,6 +26,7 @@ export function StatsSummary({ stats }: Props) {
               <th style={headerCell}>Total</th>
               <th style={headerCell}>Open</th>
               <th style={headerCell}>Closed</th>
+              <th style={headerCell}>Avg / day</th>
             </tr>
           </thead>
           <tbody>
@@ -32,29 +35,40 @@ export function StatsSummary({ stats }: Props) {
               <td style={valueCell}>{stats.total}</td>
               <td style={valueCell}>{stats.open}</td>
               <td style={valueCell}>{stats.closed}</td>
+              <td style={valueCell}>{stats.avgIssuesPerDay.toFixed(1)}</td>
             </tr>
             <tr>
               <td style={{ ...labelCell, fontWeight: 500 }}>PRs</td>
               <td style={valueCell}>{stats.totalPRs}</td>
               <td style={valueCell}>{stats.openPRs}</td>
               <td style={valueCell}>{stats.closedPRs}</td>
+              <td style={valueCell}>{stats.avgPRsPerDay.toFixed(1)}</td>
             </tr>
           </tbody>
         </table>
 
-        <div style={{ display: "flex", gap: "32px", marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #eaeaea" }}>
-          <div>
-            <div style={extraLabel}>Avg time to close</div>
-            <div style={extraValue}>
-              {stats.avgTimeToCloseHours !== null ? formatHours(stats.avgTimeToCloseHours) : "—"}
-            </div>
+        <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #eaeaea" }}>
+          <div style={{ fontSize: "0.6875rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "#666", marginBottom: "8px" }}>
+            Time to close
           </div>
-          <div>
-            <div style={extraLabel}>Median time to close</div>
-            <div style={extraValue}>
-              {stats.medianTimeToCloseHours !== null ? formatHours(stats.medianTimeToCloseHours) : "—"}
-            </div>
-          </div>
+          <table style={{ borderCollapse: "collapse", fontSize: "0.875rem" }}>
+            <thead>
+              <tr>
+                <th style={headerCell}>P50</th>
+                <th style={headerCell}>P75</th>
+                <th style={headerCell}>P90</th>
+                <th style={headerCell}>P99</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={valueCell}>{p ? formatHours(p.p50) : "—"}</td>
+                <td style={valueCell}>{p ? formatHours(p.p75) : "—"}</td>
+                <td style={valueCell}>{p ? formatHours(p.p90) : "—"}</td>
+                <td style={valueCell}>{p ? formatHours(p.p99) : "—"}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -79,21 +93,6 @@ const labelCell: React.CSSProperties = {
 
 const valueCell: React.CSSProperties = {
   padding: "4px 24px 4px 0",
-  fontSize: "1.5rem",
-  fontWeight: 600,
-  color: "#000",
-};
-
-const extraLabel: React.CSSProperties = {
-  fontSize: "0.6875rem",
-  fontWeight: 500,
-  letterSpacing: "0.08em",
-  color: "#666",
-  textTransform: "uppercase",
-  marginBottom: "4px",
-};
-
-const extraValue: React.CSSProperties = {
   fontSize: "1.5rem",
   fontWeight: 600,
   color: "#000",
