@@ -1,11 +1,62 @@
 import { useEffect, useState } from "react";
 import { fetchIssues } from "./api.js";
-import type { IssuesResponse } from "./types.js";
+import type { IssuesResponse, IssueStats, GitHubIssueDTO } from "./types.js";
 import { StatsSummary } from "./components/StatsSummary.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
 import { SearchForm, DEFAULT_FILTERS } from "./components/SearchForm.js";
 import type { SearchFilters } from "./components/SearchForm.js";
+
+function computeFilteredStats(items: GitHubIssueDTO[], byDayFromServer: IssueStats["byDay"]): IssueStats {
+  const issues = items.filter((i) => i.type === "issue");
+  const prs = items.filter((i) => i.type === "pr");
+
+  const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
+  const timeToCloseHours = closedItems.map((i) => {
+    const ms = new Date(i.closedAt!).getTime() - new Date(i.createdAt).getTime();
+    return ms / (1000 * 60 * 60);
+  });
+
+  let avgTimeToCloseHours: number | null = null;
+  let medianTimeToCloseHours: number | null = null;
+  if (timeToCloseHours.length > 0) {
+    avgTimeToCloseHours = timeToCloseHours.reduce((sum, h) => sum + h, 0) / timeToCloseHours.length;
+    const sorted = [...timeToCloseHours].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    medianTimeToCloseHours = sorted.length % 2 === 0
+      ? ((sorted[mid - 1] ?? 0) + (sorted[mid] ?? 0)) / 2
+      : (sorted[mid] ?? 0);
+  }
+
+  const issuesByDay = new Map<string, number>();
+  const prsByDay = new Map<string, number>();
+  for (const item of items) {
+    const day = item.createdAt.slice(0, 10);
+    if (item.type === "pr") {
+      prsByDay.set(day, (prsByDay.get(day) ?? 0) + 1);
+    } else {
+      issuesByDay.set(day, (issuesByDay.get(day) ?? 0) + 1);
+    }
+  }
+  const allDays = new Set([...issuesByDay.keys(), ...prsByDay.keys()]);
+  const byDay = allDays.size > 0
+    ? Array.from(allDays)
+        .map((date) => ({ date, issues: issuesByDay.get(date) ?? 0, prs: prsByDay.get(date) ?? 0 }))
+        .sort((a, b) => a.date.localeCompare(b.date))
+    : byDayFromServer;
+
+  return {
+    total: issues.length,
+    open: issues.filter((i) => i.state === "open").length,
+    closed: issues.filter((i) => i.state === "closed").length,
+    totalPRs: prs.length,
+    openPRs: prs.filter((i) => i.state === "open").length,
+    closedPRs: prs.filter((i) => i.state === "closed").length,
+    avgTimeToCloseHours,
+    medianTimeToCloseHours,
+    byDay,
+  };
+}
 
 const PAGE_SIZE = 50;
 
@@ -56,6 +107,8 @@ export function App() {
       })
     : [];
 
+  const filteredStats = data ? computeFilteredStats(filteredIssues, data.stats.byDay) : null;
+
   const pagedIssues = filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const totalPages = Math.ceil(filteredIssues.length / PAGE_SIZE);
 
@@ -75,12 +128,12 @@ export function App() {
           />
 
           <StatsSummary
-            stats={data.stats}
+            stats={filteredStats!}
             extraExpanded={statsExpanded}
             onToggleExtra={() => setStatsExpanded((e) => !e)}
           />
 
-          <IssuesOverTimeChart byDay={data.stats.byDay} />
+          <IssuesOverTimeChart byDay={filteredStats!.byDay} />
 
           <IssueTable
             issues={pagedIssues}
