@@ -17,9 +17,28 @@ export class GitHubClient {
     from: Date,
     to: Date
   ): Promise<GitHubIssue[]> {
+    return this.searchItems(owner, repo, "issue", from, to);
+  }
+
+  async listPRs(
+    owner: string,
+    repo: string,
+    from: Date,
+    to: Date
+  ): Promise<GitHubIssue[]> {
+    return this.searchItems(owner, repo, "pr", from, to);
+  }
+
+  private async searchItems(
+    owner: string,
+    repo: string,
+    itemType: "issue" | "pr",
+    from: Date,
+    to: Date
+  ): Promise<GitHubIssue[]> {
     const fromStr = from.toISOString().split("T")[0];
     const toStr = to.toISOString().split("T")[0];
-    const q = `repo:${owner}/${repo} is:issue created:${fromStr}..${toStr}`;
+    const q = `repo:${owner}/${repo} is:${itemType} created:${fromStr}..${toStr}`;
 
     const items = await this.octokit.paginate(
       this.octokit.rest.search.issuesAndPullRequests,
@@ -42,6 +61,7 @@ export class GitHubClient {
       ),
       author: item.user?.login ?? "",
       assignees: item.assignees?.map((a) => a.login) ?? [],
+      type: itemType,
     }));
   }
 }

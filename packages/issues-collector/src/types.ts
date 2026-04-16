@@ -12,6 +12,7 @@ export interface GitHubIssue {
   labels: string[];
   author: string;
   assignees: string[];
+  type: "issue" | "pr";
 }
 
 export interface FetchIssuesOptions {

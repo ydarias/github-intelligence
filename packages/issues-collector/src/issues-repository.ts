@@ -34,7 +34,7 @@ export class FlatCacheIssuesRepository implements IssuesRepository {
       for (const issue of cached) {
         if (!seen.has(issue.id)) {
           seen.add(issue.id);
-          issues.push(issue);
+          issues.push({ ...issue, type: "issue" });
         }
       }
     }

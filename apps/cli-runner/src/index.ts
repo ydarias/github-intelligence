@@ -5,6 +5,8 @@ import {
   GitHubClient,
   IssuesCollector,
   FlatCacheIssuesRepository,
+  PullRequestsCollector,
+  FlatCachePullRequestsRepository,
 } from "@github-intelligence/issues-collector";
 import { Printer } from "./printer.js";
 
@@ -34,9 +36,14 @@ const to = opts.to !== undefined ? new Date(opts.to) : new Date();
 const from = opts.from !== undefined ? new Date(opts.from) : subMonths(to, 1);
 
 const client = new GitHubClient(process.env["GITHUB_TOKEN"], process.env["GITHUB_BASE_URL"]);
-const repository = new FlatCacheIssuesRepository(process.env["CACHE_FOLDER"]);
-const collector = new IssuesCollector(client, repository);
+const issuesRepository = new FlatCacheIssuesRepository(process.env["CACHE_FOLDER"]);
+const issuesCollector = new IssuesCollector(client, issuesRepository);
+const prsRepository = new FlatCachePullRequestsRepository(process.env["CACHE_FOLDER"]);
+const prsCollector = new PullRequestsCollector(client, prsRepository);
 
-const issues = await collector.collect({ owner, repo, from, to });
+const [issues, prs] = await Promise.all([
+  issuesCollector.collect({ owner, repo, from, to }),
+  prsCollector.collect({ owner, repo, from, to }),
+]);
 
-Printer.printIssuesTable(issues);
+Printer.printIssuesTable([...issues, ...prs]);

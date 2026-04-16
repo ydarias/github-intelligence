@@ -7,6 +7,7 @@ export class Printer {
       return;
     }
 
+    const COL_TYPE = 6;
     const COL_NUM = 6;
     const COL_STATE = 8;
     const titleWidth = Math.max(
@@ -25,6 +26,8 @@ export class Printer {
     const pad = (s: string, n: number) => s.slice(0, n).padEnd(n);
 
     const header =
+      pad("Type", COL_TYPE) +
+      "  " +
       pad("#", COL_NUM) +
       "  " +
       pad("Title", titleWidth) +
@@ -42,7 +45,9 @@ export class Printer {
 
     for (const issue of issues) {
       console.log(
-        pad(String(issue.number), COL_NUM) +
+        pad(issue.type, COL_TYPE) +
+          "  " +
+          pad(String(issue.number), COL_NUM) +
           "  " +
           pad(issue.title, titleWidth) +
           "  " +

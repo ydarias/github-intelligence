@@ -10,13 +10,14 @@ export interface GitHubIssueDTO {
   author: string;
   labels: string[];
   assignees: string[];
+  type: "issue" | "pr";
 }
 
 export interface IssueStats {
   total: number;
   open: number;
   closed: number;
-  byDay: Array<{ date: string; count: number }>;
+  byDay: Array<{ date: string; issues: number; prs: number }>;
 }
 
 export interface IssuesResponse {
