@@ -10,17 +10,7 @@
 
 GitHub Intelligence is a monorepo that lets you pull issues and PRs from any GitHub repository for a given date range, cache them locally, and explore them through an interactive web dashboard — without keeping any remote infrastructure running.
 
-## Screenshots
-
-> Run the CLI to collect data, then open the dashboard in your browser.
-
-```
-Type    #       Title                                           State     Author
-------------------------------------------------------------------------
-issue   12345   Fix memory leak in useEffect cleanup           closed    acmarr
-pr      12346   Add support for concurrent rendering           open      janedoe
-issue   12347   Document the new Suspense boundaries           closed    bobsmith
-```
+![Reporter dashboard screenshot](./assets/reporter-dashboard.png)
 
 ## Features
 
@@ -81,7 +71,7 @@ cd apps/reporter
 GITHUB_TOKEN=ghp_your_token_here npm run dev
 ```
 
-Then visit [http://localhost:3001](http://localhost:3001).
+Then visit [http://localhost:5173](http://localhost:5173).
 
 ## Project structure
 
