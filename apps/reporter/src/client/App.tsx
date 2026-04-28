@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { X, List, Sun, Moon } from "lucide-react";
-import { fetchIssues } from "./api.js";
-import type { IssuesResponse, IssueStats, GitHubIssueDTO, TimeToClosePercentiles } from "./types.js";
+import { fetchIssues, fetchMembers } from "./api.js";
+import type { IssuesResponse, IssueStats, GitHubIssueDTO, TimeToClosePercentiles, OrgMember } from "./types.js";
 import { StatsSummary } from "./components/StatsSummary.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
+import { MembersTable } from "./components/MembersTable.js";
 import { SearchForm, DEFAULT_FILTERS } from "./components/SearchForm.js";
 import type { SearchFilters } from "./components/SearchForm.js";
 
@@ -82,6 +83,7 @@ export function App() {
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<IssuesResponse | null>(null);
+  const [members, setMembers] = useState<OrgMember[]>([]);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const [showIssues, setShowIssues] = useState(false);
@@ -107,6 +109,7 @@ export function App() {
         setError(e instanceof Error ? e.message : "Unknown error");
         setStatus("error");
       });
+    fetchMembers().then(setMembers).catch(() => {});
   }, []);
 
   function handleSearch(newFilters: SearchFilters) {
@@ -174,6 +177,8 @@ export function App() {
             </div>
 
             <IssuesOverTimeChart byDay={filteredStats!.byDay} />
+
+            {members.length > 0 && <MembersTable members={members} />}
 
             {/* Floating toggle button */}
             <button

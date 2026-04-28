@@ -1,4 +1,5 @@
 import type { GitHubIssue } from "@github-intelligence/issues-collector";
+import type { OrgMember } from "@github-intelligence/members-collector";
 
 export class Printer {
   static printIssuesTable(issues: GitHubIssue[]): void {
@@ -56,6 +57,40 @@ export class Printer {
           pad(issue.author, authorWidth) +
           "  " +
           pad(issue.assignees.length ? issue.assignees.join(", ") : "—", assigneesWidth)
+      );
+    }
+  }
+
+  static printMembersTable(members: OrgMember[]): void {
+    if (members.length === 0) {
+      console.log("No members found.");
+      return;
+    }
+
+    const pad = (s: string, n: number) => s.slice(0, n).padEnd(n);
+
+    const COL_LOGIN = Math.max(5, Math.max(...members.map((m) => m.login.length)));
+    const COL_NAME = Math.max(4, Math.max(...members.map((m) => (m.name ?? "—").length)));
+    const COL_EMAIL = Math.max(5, Math.max(...members.map((m) => (m.email ?? "—").length)));
+    const COL_CREATED = 10;
+
+    const header =
+      pad("Login", COL_LOGIN) + "  " +
+      pad("Name", COL_NAME) + "  " +
+      pad("Email", COL_EMAIL) + "  " +
+      "Created";
+
+    const divider = "-".repeat(header.length + COL_CREATED - 7);
+
+    console.log("\n" + header);
+    console.log(divider);
+
+    for (const member of members) {
+      console.log(
+        pad(member.login, COL_LOGIN) + "  " +
+        pad(member.name ?? "—", COL_NAME) + "  " +
+        pad(member.email ?? "—", COL_EMAIL) + "  " +
+        member.createdAt.slice(0, 10)
       );
     }
   }

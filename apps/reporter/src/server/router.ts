@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Router } from "express";
 import { FlatCacheIssuesRepository, FlatCachePullRequestsRepository } from "@github-intelligence/issues-collector";
+import { FlatCacheMembersRepository } from "@github-intelligence/members-collector";
 import { computeStats } from "./stats.js";
 
 export const router = Router();
@@ -20,4 +21,9 @@ router.get("/issues", (_req, res) => {
 
   const stats = computeStats(items);
   res.json({ issues: items, stats, total: items.length });
+});
+
+router.get("/members", (_req, res) => {
+  const repo = new FlatCacheMembersRepository(process.env["CACHE_FOLDER"]);
+  res.json(repo.loadAll());
 });

@@ -1,4 +1,4 @@
-import type { IssuesResponse } from "./types.js";
+import type { IssuesResponse, OrgMember } from "./types.js";
 
 export async function fetchIssues(): Promise<IssuesResponse> {
   const response = await fetch("/api/issues");
@@ -9,4 +9,14 @@ export async function fetchIssues(): Promise<IssuesResponse> {
   }
 
   return response.json() as Promise<IssuesResponse>;
+}
+
+export async function fetchMembers(): Promise<OrgMember[]> {
+  const response = await fetch("/api/members");
+
+  if (!response.ok) {
+    return [];
+  }
+
+  return response.json() as Promise<OrgMember[]>;
 }
