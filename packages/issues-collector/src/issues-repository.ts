@@ -2,6 +2,7 @@ import flatCache from "flat-cache";
 import type { GitHubIssue } from "./types.js";
 
 export interface IssuesRepository {
+  // TODO key is an implementation detail of the cache that shouldn't  be exposed
   save(key: string, issues: GitHubIssue[]): void;
   load(key: string): GitHubIssue[] | undefined;
 }

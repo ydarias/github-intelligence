@@ -10,6 +10,7 @@ export class MembersCollector {
   ) {}
 
   async fetch(org: string): Promise<OrgMember[]> {
+    // TODO there should be a way to force the reload
     // const cached = this.repository.load(org);
     // if (cached !== undefined) {
     //   return cached;

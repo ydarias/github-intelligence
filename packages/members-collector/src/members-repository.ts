@@ -2,6 +2,7 @@ import flatCache from "flat-cache";
 import type { OrgMember } from "./types.js";
 
 export interface MembersRepository {
+  // TODO key is an implementation detail of the cache that shouldn't  be exposed
   save(key: string, members: OrgMember[]): void;
   load(key: string): OrgMember[] | undefined;
   loadAll(): OrgMember[];

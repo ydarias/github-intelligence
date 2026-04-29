@@ -1,5 +1,5 @@
 ---
-name: new-app
+name: new-module
 description: To be used when adding a new app or package to the project.
 ---
 
