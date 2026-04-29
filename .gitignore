@@ -5,3 +5,4 @@ dist
 .idea
 .cache
 .env
+support-data.csv

@@ -78,8 +78,10 @@ function computeFilteredStats(items: GitHubIssueDTO[], byDayFromServer: IssueSta
 const PAGE_SIZE = 50;
 
 type Status = "loading" | "error" | "success";
+type View = "issues" | "members";
 
 export function App() {
+  const [view, setView] = useState<View>("issues");
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<IssuesResponse | null>(null);
@@ -145,9 +147,25 @@ export function App() {
   return (
     <div data-theme={theme} className="min-h-screen bg-surface text-text">
       <header className="border-b border-border px-8 py-4 flex items-center justify-between">
-        <h1 className="text-sm font-semibold tracking-widest uppercase text-muted">
-          GitHub Issues Reporter
-        </h1>
+        <div className="flex items-center gap-8">
+          <h1 className="text-sm font-semibold tracking-widest uppercase text-muted">
+            GitHub Intelligence
+          </h1>
+          <nav className="flex gap-6">
+            <button
+              onClick={() => setView("issues")}
+              className={`text-sm font-medium transition-colors ${view === "issues" ? "text-text" : "text-muted hover:text-text"}`}
+            >
+              Issues
+            </button>
+            <button
+              onClick={() => setView("members")}
+              className={`text-sm font-medium transition-colors ${view === "members" ? "text-text" : "text-muted hover:text-text"}`}
+            >
+              Members
+            </button>
+          </nav>
+        </div>
         <button
           onClick={toggleTheme}
           className="rounded-md p-2 text-muted transition-colors hover:bg-panel hover:text-text"
@@ -158,14 +176,20 @@ export function App() {
       </header>
 
       <main className="mx-auto max-w-7xl px-8 py-8">
-        {status === "loading" && (
-          <p className="text-muted text-sm animate-pulse">Loading…</p>
-        )}
-        {status === "error" && (
-          <p className="text-red-400 text-sm">{error}</p>
+        {view === "members" && <MembersTable members={members} />}
+
+        {view === "issues" && (
+          <>
+            {status === "loading" && (
+              <p className="text-muted text-sm animate-pulse">Loading…</p>
+            )}
+            {status === "error" && (
+              <p className="text-red-400 text-sm">{error}</p>
+            )}
+          </>
         )}
 
-        {status === "success" && data !== null && (
+        {view === "issues" && status === "success" && data !== null && (
           <>
             <div className="grid grid-cols-2 gap-6 mb-8">
               <SearchForm
@@ -177,8 +201,6 @@ export function App() {
             </div>
 
             <IssuesOverTimeChart byDay={filteredStats!.byDay} />
-
-            {members.length > 0 && <MembersTable members={members} />}
 
             {/* Floating toggle button */}
             <button

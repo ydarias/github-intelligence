@@ -4,4 +4,6 @@ export interface OrgMember {
   name: string | null;
   email: string | null;
   createdAt: string;
+  talentId: string | null;
+  jobRole: string | null;
 }

@@ -28,6 +28,8 @@ export class GitHubClient {
           name: data.name ?? null,
           email: data.email ?? null,
           createdAt: data.created_at,
+          talentId: null,
+          jobRole: null,
         };
       })
     );

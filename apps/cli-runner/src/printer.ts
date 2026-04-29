@@ -72,12 +72,16 @@ export class Printer {
     const COL_LOGIN = Math.max(5, Math.max(...members.map((m) => m.login.length)));
     const COL_NAME = Math.max(4, Math.max(...members.map((m) => (m.name ?? "—").length)));
     const COL_EMAIL = Math.max(5, Math.max(...members.map((m) => (m.email ?? "—").length)));
+    const COL_TALENT = Math.max(9, Math.max(...members.map((m) => (m.talentId ?? "—").length)));
+    const COL_ROLE = Math.max(8, Math.max(...members.map((m) => (m.jobRole ?? "—").length)));
     const COL_CREATED = 10;
 
     const header =
       pad("Login", COL_LOGIN) + "  " +
       pad("Name", COL_NAME) + "  " +
       pad("Email", COL_EMAIL) + "  " +
+      pad("Talent ID", COL_TALENT) + "  " +
+      pad("Job Role", COL_ROLE) + "  " +
       "Created";
 
     const divider = "-".repeat(header.length + COL_CREATED - 7);
@@ -90,6 +94,8 @@ export class Printer {
         pad(member.login, COL_LOGIN) + "  " +
         pad(member.name ?? "—", COL_NAME) + "  " +
         pad(member.email ?? "—", COL_EMAIL) + "  " +
+        pad(member.talentId ?? "—", COL_TALENT) + "  " +
+        pad(member.jobRole ?? "—", COL_ROLE) + "  " +
         member.createdAt.slice(0, 10)
       );
     }
