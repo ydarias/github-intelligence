@@ -4,8 +4,6 @@ When working with this codebase, prioritize readability over cleverness.
 
 Interview me until you have 95% confidence about what I actually want, not what I think I should want.
 
-When asked to implement an issue or spec, they are located at the `specs` director.
-
 ## Architecture
 
 This is a Turborepo monorepo with npm workspaces.
