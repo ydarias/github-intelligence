@@ -1,5 +1,5 @@
 import flatCache from "flat-cache";
-import type { OrgMember } from "./types.js";
+import type { OrgMember } from "@github-intelligence/github-client";
 
 export interface MembersRepository {
   // TODO key is an implementation detail of the cache that shouldn't  be exposed

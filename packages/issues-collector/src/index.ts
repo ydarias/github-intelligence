@@ -1,4 +1,3 @@
-export { GitHubClient } from "./github-client.js";
 export { IssuesCollector } from "./issues-collector.js";
 export {
   FlatCacheIssuesRepository,
@@ -9,4 +8,5 @@ export {
   FlatCachePullRequestsRepository,
   type PullRequestsRepository,
 } from "./pull-requests-repository.js";
-export type { FetchIssuesOptions, GitHubIssue } from "./types.js";
+export type { FetchIssuesOptions } from "./types.js";
+export type { GitHubIssue } from "@github-intelligence/github-client";

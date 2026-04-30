@@ -10,6 +10,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@github-intelligence/github-client": "*",
     "@github-intelligence/issues-collector": "*",
     "@github-intelligence/members-collector": "*",
     "commander": "14.0.3",

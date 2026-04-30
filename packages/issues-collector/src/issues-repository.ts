@@ -1,5 +1,5 @@
 import flatCache from "flat-cache";
-import type { GitHubIssue } from "./types.js";
+import type { GitHubIssue } from "@github-intelligence/github-client";
 
 export interface IssuesRepository {
   // TODO key is an implementation detail of the cache that shouldn't  be exposed

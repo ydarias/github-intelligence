@@ -1,7 +1,6 @@
-import type { GitHubClient } from "./github-client.js";
+import type { GitHubClient, OrgMember } from "@github-intelligence/github-client";
 import type { MembersRepository } from "./members-repository.js";
 import { SupportDataReader } from "./support-data-reader.js";
-import type { OrgMember } from "./types.js";
 
 export class MembersCollector {
   constructor(

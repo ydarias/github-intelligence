@@ -1,5 +1,5 @@
 {
-  "name": "@github-intelligence/issues-collector",
+  "name": "@github-intelligence/github-client",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,12 +14,10 @@
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@github-intelligence/github-client": "*",
-    "flat-cache": "6.1.22"
+    "@octokit/rest": "22.0.1"
   },
   "devDependencies": {
     "@github-intelligence/tsconfig": "*",

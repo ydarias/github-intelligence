@@ -17,7 +17,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@octokit/rest": "22.0.1",
+    "@github-intelligence/github-client": "*",
     "flat-cache": "6.1.22"
   },
   "devDependencies": {

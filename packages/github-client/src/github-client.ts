@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/rest";
-import type { GitHubIssue } from "./types.js";
+import type { GitHubIssue, OrgMember } from "./types.js";
 
 export class GitHubClient {
   private readonly octokit: Octokit;
@@ -27,6 +27,30 @@ export class GitHubClient {
     to: Date
   ): Promise<GitHubIssue[]> {
     return this.searchItems(owner, repo, "pr", from, to);
+  }
+
+  async listOrgMembers(org: string): Promise<OrgMember[]> {
+    const members = await this.octokit.paginate(
+      this.octokit.rest.orgs.listMembers,
+      { org, per_page: 100 }
+    );
+
+    return Promise.all(
+      members.map(async (member) => {
+        const { data } = await this.octokit.rest.users.getByUsername({
+          username: member.login,
+        });
+        return {
+          id: data.id,
+          login: data.login,
+          name: data.name ?? null,
+          email: data.email ?? null,
+          createdAt: data.created_at,
+          talentId: null,
+          jobRole: null,
+        };
+      })
+    );
   }
 
   private async searchItems(
