@@ -1,5 +1,9 @@
 import { Octokit } from "@octokit/rest";
-import type { GitHubIssue, OrgMember } from "./types.js";
+import { issueMapper } from "./mappers/issue-mapper.js";
+import { memberMapper } from "./mappers/member-mapper.js";
+import {GithubIssue} from "./types/github-issue.js";
+import {OrgMember} from "./types/org-member.js";
+import {GithubElementType} from "./types/github-element-type.js";
 
 export class GitHubClient {
   private readonly octokit: Octokit;
@@ -16,7 +20,7 @@ export class GitHubClient {
     repo: string,
     from: Date,
     to: Date
-  ): Promise<GitHubIssue[]> {
+  ): Promise<GithubIssue[]> {
     return this.searchItems(owner, repo, "issue", from, to);
   }
 
@@ -25,7 +29,7 @@ export class GitHubClient {
     repo: string,
     from: Date,
     to: Date
-  ): Promise<GitHubIssue[]> {
+  ): Promise<GithubIssue[]> {
     return this.searchItems(owner, repo, "pr", from, to);
   }
 
@@ -40,15 +44,7 @@ export class GitHubClient {
         const { data } = await this.octokit.rest.users.getByUsername({
           username: member.login,
         });
-        return {
-          id: data.id,
-          login: data.login,
-          name: data.name ?? null,
-          email: data.email ?? null,
-          createdAt: data.created_at,
-          talentId: null,
-          jobRole: null,
-        };
+        return memberMapper.toOrgMember(data);
       })
     );
   }
@@ -56,10 +52,10 @@ export class GitHubClient {
   private async searchItems(
     owner: string,
     repo: string,
-    itemType: "issue" | "pr",
+    itemType: GithubElementType,
     from: Date,
     to: Date
-  ): Promise<GitHubIssue[]> {
+  ): Promise<GithubIssue[]> {
     const fromStr = from.toISOString().split("T")[0];
     const toStr = to.toISOString().split("T")[0];
     const q = `repo:${owner}/${repo} is:${itemType} created:${fromStr}..${toStr}`;
@@ -69,23 +65,6 @@ export class GitHubClient {
       { q, per_page: 100 }
     );
 
-    return items.map((item) => ({
-      id: item.id,
-      number: item.number,
-      repository: repo,
-      title: item.title,
-      body: item.body ?? null,
-      state: item.state,
-      createdAt: item.created_at,
-      updatedAt: item.updated_at,
-      closedAt: item.closed_at ?? null,
-      url: item.html_url,
-      labels: item.labels.map((label) =>
-        typeof label === "string" ? label : (label.name ?? "")
-      ),
-      author: item.user?.login ?? "",
-      assignees: item.assignees?.map((a) => a.login) ?? [],
-      type: itemType,
-    }));
+    return items.map((item) => issueMapper.toGitHubIssue(item, repo, itemType));
   }
 }

@@ -1,8 +1,8 @@
-import type { GitHubIssue } from "@github-intelligence/issues-collector";
+import type { GithubIssue } from "@github-intelligence/issues-collector";
 import type { OrgMember } from "@github-intelligence/members-collector";
 
 export class Printer {
-  static printIssuesTable(issues: GitHubIssue[]): void {
+  static printIssuesTable(issues: GithubIssue[]): void {
     if (issues.length === 0) {
       console.log("No issues found.");
       return;

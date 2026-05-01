@@ -1,4 +1,4 @@
-import type { GitHubIssue } from "@github-intelligence/issues-collector";
+import type { GithubIssue } from "@github-intelligence/issues-collector";
 
 export interface TimeToClosePercentiles {
   p50: number;
@@ -32,7 +32,7 @@ function calendarDaysInRange(dates: string[]): number {
   return Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1;
 }
 
-export function computeStats(items: GitHubIssue[]): IssueStats {
+export function computeStats(items: GithubIssue[]): IssueStats {
   const issues = items.filter((i) => i.type === "issue");
   const prs = items.filter((i) => i.type === "pr");
 

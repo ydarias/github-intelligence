@@ -1,11 +1,11 @@
 import flatCache from "flat-cache";
-import type { GitHubIssue } from "@github-intelligence/github-client";
+import type { GithubIssue } from "@github-intelligence/github-client";
 
 // TODO at the repository level is really necessary to have the key? that is a cache impl detail
 export interface PullRequestsRepository {
-  save(key: string, prs: GitHubIssue[]): void;
-  load(key: string): GitHubIssue[] | undefined;
-  loadAll(): GitHubIssue[];
+  save(key: string, prs: GithubIssue[]): void;
+  load(key: string): GithubIssue[] | undefined;
+  loadAll(): GithubIssue[];
 }
 
 export class FlatCachePullRequestsRepository implements PullRequestsRepository {
@@ -15,22 +15,22 @@ export class FlatCachePullRequestsRepository implements PullRequestsRepository {
     this.cacheDir = cacheDir;
   }
 
-  save(key: string, prs: GitHubIssue[]): void {
+  save(key: string, prs: GithubIssue[]): void {
     const cache = flatCache.create({ cacheId: "pull-requests", cacheDir: this.cacheDir });
     cache.set(key, prs);
     cache.save();
   }
 
-  load(key: string): GitHubIssue[] | undefined {
+  load(key: string): GithubIssue[] | undefined {
     const cache = flatCache.create({ cacheId: "pull-requests", cacheDir: this.cacheDir });
-    return cache.get<GitHubIssue[] | undefined>(key);
+    return cache.get<GithubIssue[] | undefined>(key);
   }
 
-  loadAll(): GitHubIssue[] {
+  loadAll(): GithubIssue[] {
     const cache = flatCache.create({ cacheId: "pull-requests", cacheDir: this.cacheDir });
-    const all = cache.all() as Record<string, GitHubIssue[]>;
+    const all = cache.all() as Record<string, GithubIssue[]>;
     const seen = new Set<number>();
-    const prs: GitHubIssue[] = [];
+    const prs: GithubIssue[] = [];
 
     for (const cached of Object.values(all)) {
       for (const pr of cached) {

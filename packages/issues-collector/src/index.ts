@@ -9,4 +9,4 @@ export {
   type PullRequestsRepository,
 } from "./pull-requests-repository.js";
 export type { FetchIssuesOptions } from "./types.js";
-export type { GitHubIssue } from "@github-intelligence/github-client";
+export type { GithubIssue } from "@github-intelligence/github-client";

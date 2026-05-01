@@ -1,4 +1,4 @@
-import type { GitHubClient, GitHubIssue } from "@github-intelligence/github-client";
+import type { GitHubClient, GithubIssue } from "@github-intelligence/github-client";
 import type { IssuesRepository } from "./issues-repository.js";
 import type { FetchIssuesOptions } from "./types.js";
 
@@ -8,7 +8,7 @@ export class IssuesCollector {
     private readonly repository: IssuesRepository
   ) {}
 
-  async collect(options: FetchIssuesOptions): Promise<GitHubIssue[]> {
+  async collect(options: FetchIssuesOptions): Promise<GithubIssue[]> {
     const { owner, repo, from, to } = options;
     const key = `${owner}/${repo}/${from.toISOString()}/${to.toISOString()}`;
 

@@ -1,10 +1,10 @@
 import flatCache from "flat-cache";
-import type { GitHubIssue } from "@github-intelligence/github-client";
+import type { GithubIssue } from "@github-intelligence/github-client";
 
 export interface IssuesRepository {
   // TODO key is an implementation detail of the cache that shouldn't  be exposed
-  save(key: string, issues: GitHubIssue[]): void;
-  load(key: string): GitHubIssue[] | undefined;
+  save(key: string, issues: GithubIssue[]): void;
+  load(key: string): GithubIssue[] | undefined;
 }
 
 export class FlatCacheIssuesRepository implements IssuesRepository {
@@ -14,22 +14,22 @@ export class FlatCacheIssuesRepository implements IssuesRepository {
     this.cacheDir = cacheDir;
   }
 
-  save(key: string, issues: GitHubIssue[]): void {
+  save(key: string, issues: GithubIssue[]): void {
     const cache = flatCache.create({ cacheId: "issues", cacheDir: this.cacheDir });
     cache.set(key, issues);
     cache.save();
   }
 
-  load(key: string): GitHubIssue[] | undefined {
+  load(key: string): GithubIssue[] | undefined {
     const cache = flatCache.create({ cacheId: "issues", cacheDir: this.cacheDir });
-    return cache.get<GitHubIssue[] | undefined>(key);
+    return cache.get<GithubIssue[] | undefined>(key);
   }
 
-  loadAll(): GitHubIssue[] {
+  loadAll(): GithubIssue[] {
     const cache = flatCache.create({ cacheId: "issues", cacheDir: this.cacheDir });
-    const all = cache.all() as Record<string, GitHubIssue[]>;
+    const all = cache.all() as Record<string, GithubIssue[]>;
     const seen = new Set<number>();
-    const issues: GitHubIssue[] = [];
+    const issues: GithubIssue[] = [];
 
     for (const cached of Object.values(all)) {
       for (const issue of cached) {
