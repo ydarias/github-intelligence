@@ -1,16 +1,23 @@
-import { useEffect, useState } from "react";
 import { X, List, Sun, Moon } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import { fetchIssues, fetchMembers } from "./api.js";
-import type { IssuesResponse, IssueStats, GitHubIssueDTO, TimeToClosePercentiles, OrgMember } from "./types.js";
-import { StatsSummary } from "./components/StatsSummary.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
 import { MembersTable } from "./components/MembersTable.js";
 import { SearchForm, DEFAULT_FILTERS } from "./components/SearchForm.js";
 import type { SearchFilters } from "./components/SearchForm.js";
+import { StatsSummary } from "./components/StatsSummary.js";
+import type {
+  IssuesResponse,
+  IssueStats,
+  GitHubIssueDTO,
+  TimeToClosePercentiles,
+  OrgMember,
+} from "./types.js";
 
 function nearestRankPercentile(sorted: number[], p: number): number {
-  const rank = Math.ceil(p / 100 * sorted.length);
+  const rank = Math.ceil((p / 100) * sorted.length);
   return sorted[rank - 1] ?? 0;
 }
 
@@ -18,10 +25,15 @@ function calendarDaysInRange(dates: string[]): number {
   if (dates.length === 0) return 1;
   const min = dates.reduce((a, b) => (a < b ? a : b));
   const max = dates.reduce((a, b) => (a > b ? a : b));
-  return Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  return (
+    Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1
+  );
 }
 
-function computeFilteredStats(items: GitHubIssueDTO[], byDayFromServer: IssueStats["byDay"]): IssueStats {
+function computeFilteredStats(
+  items: GitHubIssueDTO[],
+  byDayFromServer: IssueStats["byDay"],
+): IssueStats {
   const issues = items.filter((i) => i.type === "issue");
   const prs = items.filter((i) => i.type === "pr");
 
@@ -32,17 +44,20 @@ function computeFilteredStats(items: GitHubIssueDTO[], byDayFromServer: IssueSta
 
   const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
   const timeToCloseHours = closedItems
-    .map((i) => (new Date(i.closedAt!).getTime() - new Date(i.createdAt).getTime()) / (1000 * 60 * 60))
+    .map(
+      (i) => (new Date(i.closedAt!).getTime() - new Date(i.createdAt).getTime()) / (1000 * 60 * 60),
+    )
     .sort((a, b) => a - b);
 
-  const timeToClosePercentiles: TimeToClosePercentiles | null = timeToCloseHours.length > 0
-    ? {
-        p50: nearestRankPercentile(timeToCloseHours, 50),
-        p75: nearestRankPercentile(timeToCloseHours, 75),
-        p90: nearestRankPercentile(timeToCloseHours, 90),
-        p99: nearestRankPercentile(timeToCloseHours, 99),
-      }
-    : null;
+  const timeToClosePercentiles: TimeToClosePercentiles | null =
+    timeToCloseHours.length > 0
+      ? {
+          p50: nearestRankPercentile(timeToCloseHours, 50),
+          p75: nearestRankPercentile(timeToCloseHours, 75),
+          p90: nearestRankPercentile(timeToCloseHours, 90),
+          p99: nearestRankPercentile(timeToCloseHours, 99),
+        }
+      : null;
 
   const issuesByDay = new Map<string, number>();
   const prsByDay = new Map<string, number>();
@@ -55,11 +70,16 @@ function computeFilteredStats(items: GitHubIssueDTO[], byDayFromServer: IssueSta
     }
   }
   const allDays = new Set([...issuesByDay.keys(), ...prsByDay.keys()]);
-  const byDay = allDays.size > 0
-    ? Array.from(allDays)
-        .map((date) => ({ date, issues: issuesByDay.get(date) ?? 0, prs: prsByDay.get(date) ?? 0 }))
-        .sort((a, b) => a.date.localeCompare(b.date))
-    : byDayFromServer;
+  const byDay =
+    allDays.size > 0
+      ? Array.from(allDays)
+          .map((date) => ({
+            date,
+            issues: issuesByDay.get(date) ?? 0,
+            prs: prsByDay.get(date) ?? 0,
+          }))
+          .sort((a, b) => a.date.localeCompare(b.date))
+      : byDayFromServer;
 
   return {
     total: issues.length,
@@ -90,7 +110,7 @@ export function App() {
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const [showIssues, setShowIssues] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">(
-    () => (localStorage.getItem("theme") as "dark" | "light") ?? "dark"
+    () => (localStorage.getItem("theme") as "dark" | "light") ?? "dark",
   );
 
   function toggleTheme() {
@@ -111,7 +131,9 @@ export function App() {
         setError(e instanceof Error ? e.message : "Unknown error");
         setStatus("error");
       });
-    fetchMembers().then(setMembers).catch(() => {});
+    fetchMembers()
+      .then(setMembers)
+      .catch(() => {});
   }, []);
 
   function handleSearch(newFilters: SearchFilters) {
@@ -119,9 +141,7 @@ export function App() {
     setPage(1);
   }
 
-  const authors = data
-    ? Array.from(new Set(data.issues.map((i) => i.author))).sort()
-    : [];
+  const authors = data ? Array.from(new Set(data.issues.map((i) => i.author))).sort() : [];
 
   const assignees = data
     ? Array.from(new Set(data.issues.flatMap((i) => i.assignees ?? []))).sort()
@@ -130,11 +150,17 @@ export function App() {
   const filteredIssues = data
     ? data.issues.filter((i) => {
         if (filters.type !== "all" && i.type !== filters.type) return false;
-        if (filters.title !== "" && !i.title.toLowerCase().includes(filters.title.toLowerCase())) return false;
+        if (filters.title !== "" && !i.title.toLowerCase().includes(filters.title.toLowerCase()))
+          return false;
         if (filters.state !== "all" && i.state !== filters.state) return false;
         if (filters.author !== "" && i.author !== filters.author) return false;
-        if (filters.assignee !== "" && !(i.assignees ?? []).includes(filters.assignee)) return false;
-        if (filters.oneDayOnly && !(i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10))) return false;
+        if (filters.assignee !== "" && !(i.assignees ?? []).includes(filters.assignee))
+          return false;
+        if (
+          filters.oneDayOnly &&
+          !(i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10))
+        )
+          return false;
         return true;
       })
     : [];
@@ -180,23 +206,15 @@ export function App() {
 
         {view === "issues" && (
           <>
-            {status === "loading" && (
-              <p className="text-muted text-sm animate-pulse">Loading…</p>
-            )}
-            {status === "error" && (
-              <p className="text-red-400 text-sm">{error}</p>
-            )}
+            {status === "loading" && <p className="text-muted text-sm animate-pulse">Loading…</p>}
+            {status === "error" && <p className="text-red-400 text-sm">{error}</p>}
           </>
         )}
 
         {view === "issues" && status === "success" && data !== null && (
           <>
             <div className="grid grid-cols-2 gap-6 mb-8">
-              <SearchForm
-                authors={authors}
-                assignees={assignees}
-                onSearch={handleSearch}
-              />
+              <SearchForm authors={authors} assignees={assignees} onSearch={handleSearch} />
               <StatsSummary stats={filteredStats!} />
             </div>
 

@@ -24,20 +24,20 @@ node dist/index.js --repo facebook/react --token ghp_your_token
 
 ### Options
 
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--repo <owner/repo>` | Yes | Repository in `owner/repo` format |
-| `--from <date>` | No | Start date in ISO format (default: 1 month ago) |
-| `--to <date>` | No | End date in ISO format (default: today) |
-| `--token <token>` | No | GitHub personal access token |
+| Flag                  | Required | Description                                     |
+| --------------------- | -------- | ----------------------------------------------- |
+| `--repo <owner/repo>` | Yes      | Repository in `owner/repo` format               |
+| `--from <date>`       | No       | Start date in ISO format (default: 1 month ago) |
+| `--to <date>`         | No       | End date in ISO format (default: today)         |
+| `--token <token>`     | No       | GitHub personal access token                    |
 
 ### Environment variables
 
-| Variable | Description |
-|----------|-------------|
-| `GITHUB_TOKEN` | GitHub personal access token |
+| Variable          | Description                                 |
+| ----------------- | ------------------------------------------- |
+| `GITHUB_TOKEN`    | GitHub personal access token                |
 | `GITHUB_BASE_URL` | GitHub API base URL (for GitHub Enterprise) |
-| `CACHE_FOLDER` | Local cache directory path |
+| `CACHE_FOLDER`    | Local cache directory path                  |
 
 Place these in a `.env` file in this directory — `dotenv` loads it automatically.
 

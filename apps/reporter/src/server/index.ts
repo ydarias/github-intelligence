@@ -1,8 +1,10 @@
 import "dotenv/config";
-import express from "express";
-import cors from "cors";
-import { fileURLToPath } from "node:url";
 import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import cors from "cors";
+import express from "express";
+
 import { router } from "./router.js";
 
 const app = express();

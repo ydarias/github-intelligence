@@ -24,6 +24,7 @@ Merge the two divergent `GitHubClient` implementations into one package.
 Move `GitHubIssue` (from issues-collector) and `OrgMember` (from members-collector) here as the canonical type definitions.
 
 **Files to create:**
+
 - `packages/github-client/src/github-client.ts` — unified class with `listIssues`, `listPRs`, `listOrgMembers`
 - `packages/github-client/src/types.ts` — `GitHubIssue`, `OrgMember`
 - `packages/github-client/src/index.ts` — public exports
@@ -31,6 +32,7 @@ Move `GitHubIssue` (from issues-collector) and `OrgMember` (from members-collect
 - `packages/github-client/tsconfig.json` — extends `@github-intelligence/tsconfig/base.json`
 
 **Acceptance criteria:**
+
 - `cd packages/github-client && npm run build` succeeds with no type errors
 - `dist/index.js` and `dist/index.d.ts` are emitted
 - Exports: `GitHubClient`, `GitHubIssue`, `OrgMember`
@@ -48,6 +50,7 @@ Run `npm run build` from repo root; only `github-client` needs to succeed at thi
 Remove local copy of `GitHubClient`; import types from the new package.
 
 **Changes:**
+
 - `package.json` — add `"@github-intelligence/github-client": "*"` to `dependencies`; remove `@octokit/rest` (no longer needed directly)
 - `src/github-client.ts` — **DELETE**
 - `src/types.ts` — remove `GitHubIssue` definition; import it from `@github-intelligence/github-client`; keep `FetchIssuesOptions`
@@ -56,6 +59,7 @@ Remove local copy of `GitHubClient`; import types from the new package.
 - `src/index.ts` — remove `GitHubClient` export; re-export `GitHubIssue` from `@github-intelligence/github-client` (so existing consumers of this package don't break)
 
 **Acceptance criteria:**
+
 - `npm test` (issues-collector) passes unchanged
 - `npm run build` (issues-collector) succeeds
 - No `github-client.ts` exists in `packages/issues-collector/src/`
@@ -68,6 +72,7 @@ Remove local copy of `GitHubClient`; import types from the new package.
 Mirror of Task 2 for the members side.
 
 **Changes:**
+
 - `package.json` — add `"@github-intelligence/github-client": "*"`; remove `@octokit/rest`
 - `src/github-client.ts` — **DELETE**
 - `src/types.ts` — remove `OrgMember` definition; import it from `@github-intelligence/github-client`
@@ -75,6 +80,7 @@ Mirror of Task 2 for the members side.
 - `src/index.ts` — remove `GitHubClient` export; re-export `OrgMember` from `@github-intelligence/github-client`
 
 **Acceptance criteria:**
+
 - `npm run build` (members-collector) succeeds
 - No `github-client.ts` exists in `packages/members-collector/src/`
 - `OrgMember` is still importable from `@github-intelligence/members-collector`
@@ -93,6 +99,7 @@ Run `npm run build` for both collector packages.
 Replace the flat-flags design with three proper commander subcommands.
 
 **Changes:**
+
 - `package.json` — add `"@github-intelligence/github-client": "*"` to `dependencies`
 - `src/index.ts` — full rewrite:
   - Import `GitHubClient` from `@github-intelligence/github-client` (not from collectors)
@@ -105,6 +112,7 @@ Replace the flat-flags design with three proper commander subcommands.
 - `src/printer.ts` — **unchanged**
 
 **Acceptance criteria:**
+
 - `npm run build` (cli-runner) succeeds
 - `node apps/cli-runner/dist/index.js issues --repo owner/repo` exits without crash (network call aside)
 - `node apps/cli-runner/dist/index.js prs --repo owner/repo` same

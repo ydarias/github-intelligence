@@ -1,5 +1,5 @@
-import flatCache from "flat-cache";
 import type { GithubIssue } from "@github-intelligence/github-client";
+import flatCache from "flat-cache";
 
 // TODO at the repository level is really necessary to have the key? that is a cache impl detail
 export interface PullRequestsRepository {

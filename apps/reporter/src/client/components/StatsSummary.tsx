@@ -1,4 +1,5 @@
 import type { IssueStats } from "../types.js";
+
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
 
 interface Props {
@@ -45,10 +46,10 @@ export function StatsSummary({ stats }: Props) {
           <div className="grid grid-cols-4 gap-3">
             {(["p50", "p75", "p90", "p99"] as const).map((key) => (
               <div key={key} className="rounded-lg border border-border bg-surface p-3 text-center">
-                <p className="text-[10px] uppercase tracking-widest text-muted mb-1">{key.toUpperCase()}</p>
-                <p className="text-xl font-bold text-text">
-                  {p ? formatHours(p[key]) : "—"}
+                <p className="text-[10px] uppercase tracking-widest text-muted mb-1">
+                  {key.toUpperCase()}
                 </p>
+                <p className="text-xl font-bold text-text">{p ? formatHours(p[key]) : "—"}</p>
               </div>
             ))}
           </div>
@@ -81,7 +82,15 @@ function MetricGroup({ label, total, open, closed, avg, accentClass }: MetricGro
   );
 }
 
-function Metric({ label, value, large }: { label: string; value: number | string; large?: boolean }) {
+function Metric({
+  label,
+  value,
+  large,
+}: {
+  label: string;
+  value: number | string;
+  large?: boolean;
+}) {
   return (
     <div>
       <p className="text-[10px] uppercase tracking-widest text-muted">{label}</p>

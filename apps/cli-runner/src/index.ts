@@ -1,6 +1,4 @@
 import "dotenv/config";
-import { Command } from "commander";
-import { subMonths } from "date-fns";
 import { GitHubClient } from "@github-intelligence/github-client";
 import {
   IssuesCollector,
@@ -12,6 +10,9 @@ import {
   MembersCollector,
   FlatCacheMembersRepository,
 } from "@github-intelligence/members-collector";
+import { Command } from "commander";
+import { subMonths } from "date-fns";
+
 import { Printer } from "./printer.js";
 
 const program = new Command();

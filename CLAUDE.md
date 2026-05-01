@@ -11,7 +11,7 @@ This is a Turborepo monorepo with npm workspaces.
 - `apps/` — runnable applications. None exist yet.
 - `packages/` — shared internal packages consumed by apps and other packages.
   - `packages/tsconfig/` — shared TypeScript configs. New packages and apps extend `@github-intelligence/tsconfig/base.json`.
-  - `packages/issues-collector` — library to collect and store in a cache issues from Github. 
+  - `packages/issues-collector` — library to collect and store in a cache issues from Github.
 
 ## TypeScript
 

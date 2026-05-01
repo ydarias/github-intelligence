@@ -52,8 +52,8 @@ import {
 } from "@github-intelligence/issues-collector";
 
 const collector = new IssuesCollector(
-  new GitHubClient(),                 // reads GITHUB_TOKEN from env
-  new FlatCacheIssuesRepository()     // caches to .cache/issues-collector/
+  new GitHubClient(), // reads GITHUB_TOKEN from env
+  new FlatCacheIssuesRepository(), // caches to .cache/issues-collector/
 );
 
 const issues = await collector.collect({
@@ -75,7 +75,7 @@ import {
 
 const collector = new PullRequestsCollector(
   new GitHubClient(),
-  new FlatCachePullRequestsRepository()
+  new FlatCachePullRequestsRepository(),
 );
 
 const prs = await collector.collect({
@@ -90,7 +90,7 @@ const prs = await collector.collect({
 
 ```ts
 const client = new GitHubClient("ghp_your_token", "https://github.mycompany.com/api/v3");
-const repo   = new FlatCacheIssuesRepository("/tmp/my-cache");
+const repo = new FlatCacheIssuesRepository("/tmp/my-cache");
 ```
 
 ### Bring your own repository
@@ -99,9 +99,15 @@ const repo   = new FlatCacheIssuesRepository("/tmp/my-cache");
 import type { IssuesRepository, GitHubIssue } from "@github-intelligence/issues-collector";
 
 class MyRepository implements IssuesRepository {
-  save(key: string, issues: GitHubIssue[]): void { /* ... */ }
-  load(key: string): GitHubIssue[] | undefined { /* ... */ }
-  loadAll(): GitHubIssue[] { /* ... */ }
+  save(key: string, issues: GitHubIssue[]): void {
+    /* ... */
+  }
+  load(key: string): GitHubIssue[] | undefined {
+    /* ... */
+  }
+  loadAll(): GitHubIssue[] {
+    /* ... */
+  }
 }
 ```
 

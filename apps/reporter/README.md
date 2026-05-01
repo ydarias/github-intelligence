@@ -53,10 +53,10 @@ If no cached data is found the endpoint returns `404` with an error message dire
 - **Stats summary** — total, open, and closed counts that update as you filter.
 - **Issues over time chart** — area chart showing issues and PRs created per day.
 - **Tabbed views**:
-  - *All Issues* — full list with author and assignee filters.
-  - *Same Day* — items closed on the same day they were opened.
-  - *Still Open* — items still in open state.
-  - *By Author* — filter by a specific author across all items.
+  - _All Issues_ — full list with author and assignee filters.
+  - _Same Day_ — items closed on the same day they were opened.
+  - _Still Open_ — items still in open state.
+  - _By Author_ — filter by a specific author across all items.
 - **Pagination** — 50 items per page.
 
 ## Getting started
@@ -84,12 +84,12 @@ npm run clean        # remove dist/
 
 ## Environment variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `GITHUB_TOKEN` | GitHub personal access token | — |
-| `CACHE_FOLDER` | Path to the local cache directory written by the CLI | `.cache/` |
-| `PORT` | HTTP port for the Express server | `3001` |
-| `NODE_ENV` | Set to `production` to serve the client bundle from Express | — |
+| Variable       | Description                                                 | Default   |
+| -------------- | ----------------------------------------------------------- | --------- |
+| `GITHUB_TOKEN` | GitHub personal access token                                | —         |
+| `CACHE_FOLDER` | Path to the local cache directory written by the CLI        | `.cache/` |
+| `PORT`         | HTTP port for the Express server                            | `3001`    |
+| `NODE_ENV`     | Set to `production` to serve the client bundle from Express | —         |
 
 Place these in a `.env` file in this directory.
 

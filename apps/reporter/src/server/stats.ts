@@ -21,7 +21,7 @@ export interface IssueStats {
 }
 
 function nearestRankPercentile(sorted: number[], p: number): number {
-  const rank = Math.ceil(p / 100 * sorted.length);
+  const rank = Math.ceil((p / 100) * sorted.length);
   return sorted[rank - 1] ?? 0;
 }
 
@@ -29,7 +29,9 @@ function calendarDaysInRange(dates: string[]): number {
   if (dates.length === 0) return 1;
   const min = dates.reduce((a, b) => (a < b ? a : b));
   const max = dates.reduce((a, b) => (a > b ? a : b));
-  return Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  return (
+    Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1
+  );
 }
 
 export function computeStats(items: GithubIssue[]): IssueStats {
@@ -48,17 +50,20 @@ export function computeStats(items: GithubIssue[]): IssueStats {
 
   const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
   const timeToCloseHours = closedItems
-    .map((i) => (new Date(i.closedAt!).getTime() - new Date(i.createdAt).getTime()) / (1000 * 60 * 60))
+    .map(
+      (i) => (new Date(i.closedAt!).getTime() - new Date(i.createdAt).getTime()) / (1000 * 60 * 60),
+    )
     .sort((a, b) => a - b);
 
-  const timeToClosePercentiles: TimeToClosePercentiles | null = timeToCloseHours.length > 0
-    ? {
-        p50: nearestRankPercentile(timeToCloseHours, 50),
-        p75: nearestRankPercentile(timeToCloseHours, 75),
-        p90: nearestRankPercentile(timeToCloseHours, 90),
-        p99: nearestRankPercentile(timeToCloseHours, 99),
-      }
-    : null;
+  const timeToClosePercentiles: TimeToClosePercentiles | null =
+    timeToCloseHours.length > 0
+      ? {
+          p50: nearestRankPercentile(timeToCloseHours, 50),
+          p75: nearestRankPercentile(timeToCloseHours, 75),
+          p90: nearestRankPercentile(timeToCloseHours, 90),
+          p99: nearestRankPercentile(timeToCloseHours, 99),
+        }
+      : null;
 
   const issuesByDay = new Map<string, number>();
   const prsByDay = new Map<string, number>();

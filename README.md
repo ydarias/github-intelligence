@@ -87,12 +87,12 @@ github-intelligence/
 
 ## Environment variables
 
-| Variable | Used by | Description |
-|----------|---------|-------------|
-| `GITHUB_TOKEN` | CLI, Reporter | GitHub personal access token |
-| `GITHUB_BASE_URL` | CLI | GitHub API base URL (GitHub Enterprise) |
-| `CACHE_FOLDER` | CLI, Reporter | Local cache directory (default: `.cache/`) |
-| `PORT` | Reporter | HTTP port for the reporter server (default: `3001`) |
+| Variable          | Used by       | Description                                         |
+| ----------------- | ------------- | --------------------------------------------------- |
+| `GITHUB_TOKEN`    | CLI, Reporter | GitHub personal access token                        |
+| `GITHUB_BASE_URL` | CLI           | GitHub API base URL (GitHub Enterprise)             |
+| `CACHE_FOLDER`    | CLI, Reporter | Local cache directory (default: `.cache/`)          |
+| `PORT`            | Reporter      | HTTP port for the reporter server (default: `3001`) |
 
 Both apps load `.env` files automatically via `dotenv`.
 

@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
-import { Label } from "./ui/label.js";
-import { Input } from "./ui/input.js";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select.js";
-import { Checkbox } from "./ui/checkbox.js";
+
 import { Button } from "./ui/button.js";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
+import { Checkbox } from "./ui/checkbox.js";
+import { Input } from "./ui/input.js";
+import { Label } from "./ui/label.js";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select.js";
 
 export interface SearchFilters {
   type: "all" | "issue" | "pr";
@@ -98,7 +99,9 @@ export function SearchForm({ authors, assignees, onSearch }: Props) {
             <SelectContent>
               <SelectItem value="__all__">All</SelectItem>
               {authors.map((a) => (
-                <SelectItem key={a} value={a}>{a}</SelectItem>
+                <SelectItem key={a} value={a}>
+                  {a}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -114,7 +117,9 @@ export function SearchForm({ authors, assignees, onSearch }: Props) {
             <SelectContent>
               <SelectItem value="__all__">All</SelectItem>
               {assignees.map((a) => (
-                <SelectItem key={a} value={a}>{a}</SelectItem>
+                <SelectItem key={a} value={a}>
+                  {a}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>

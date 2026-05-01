@@ -1,11 +1,12 @@
 import type { GitHubClient, GithubIssue } from "@github-intelligence/github-client";
+
 import type { PullRequestsRepository } from "./pull-requests-repository.js";
 import type { FetchIssuesOptions } from "./types.js";
 
 export class PullRequestsCollector {
   constructor(
     private readonly client: GitHubClient,
-    private readonly repository: PullRequestsRepository
+    private readonly repository: PullRequestsRepository,
   ) {}
 
   async collect(options: FetchIssuesOptions): Promise<GithubIssue[]> {

@@ -1,5 +1,5 @@
-import {OrgMember} from "../types/org-member.js";
-import {OctokitUserData} from "../types/octokit-user-data.js";
+import type { OctokitUserData } from "../types/octokit-user-data.js";
+import type { OrgMember } from "../types/org-member.js";
 
 export const memberMapper = {
   toOrgMember(data: OctokitUserData): OrgMember {

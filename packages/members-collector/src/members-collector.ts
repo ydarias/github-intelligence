@@ -1,11 +1,12 @@
 import type { GitHubClient, OrgMember } from "@github-intelligence/github-client";
+
 import type { MembersRepository } from "./members-repository.js";
 import { SupportDataReader } from "./support-data-reader.js";
 
 export class MembersCollector {
   constructor(
     private readonly client: GitHubClient,
-    private readonly repository: MembersRepository
+    private readonly repository: MembersRepository,
   ) {}
 
   async fetch(org: string): Promise<OrgMember[]> {
@@ -19,7 +20,8 @@ export class MembersCollector {
     const members = await this.client.listOrgMembers(org);
 
     const enriched = members.map((member) => {
-      const entry = member.email !== null ? supportData.get(member.email.trim().toLowerCase()) : undefined;
+      const entry =
+        member.email !== null ? supportData.get(member.email.trim().toLowerCase()) : undefined;
       return {
         ...member,
         talentId: entry?.talentId ?? null,

@@ -1,15 +1,19 @@
 import "dotenv/config";
-import { Router } from "express";
-import { FlatCacheIssuesRepository, FlatCachePullRequestsRepository } from "@github-intelligence/issues-collector";
+import {
+  FlatCacheIssuesRepository,
+  FlatCachePullRequestsRepository,
+} from "@github-intelligence/issues-collector";
 import { FlatCacheMembersRepository } from "@github-intelligence/members-collector";
+import { Router } from "express";
+
 import { computeStats } from "./stats.js";
 
 export const router = Router();
 
 // TODO the router be responsible just for the URL mapping, the action is handled at controller level
 router.get("/issues", (_req, res) => {
-  const issuesRepo = new FlatCacheIssuesRepository(process.env['CACHE_FOLDER']);
-  const prsRepo = new FlatCachePullRequestsRepository(process.env['CACHE_FOLDER']);
+  const issuesRepo = new FlatCacheIssuesRepository(process.env["CACHE_FOLDER"]);
+  const prsRepo = new FlatCachePullRequestsRepository(process.env["CACHE_FOLDER"]);
   const items = [...issuesRepo.loadAll(), ...prsRepo.loadAll()];
 
   if (items.length === 0) {

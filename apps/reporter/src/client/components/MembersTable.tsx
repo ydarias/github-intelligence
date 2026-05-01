@@ -1,9 +1,11 @@
-import { useState } from "react";
 import { Copy, Check, Download } from "lucide-react";
+import { useState } from "react";
+
+import type { OrgMember } from "../types.js";
+
 import { Button } from "./ui/button.js";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.js";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table.js";
-import type { OrgMember } from "../types.js";
 
 const JOINED_FROM = "2025-04-01";
 const JOINED_TO = "2026-03-31";
@@ -18,7 +20,7 @@ function toCSV(members: OrgMember[]): string {
   const rows = members.map((m) =>
     [m.name ?? "", m.email ?? "", m.jobRole ?? "", m.talentId ?? "", joinedDate(m.createdAt), ""]
       .map((v) => `"${v.replace(/"/g, '""')}"`)
-      .join(",")
+      .join(","),
   );
   return [header, ...rows].join("\n");
 }
@@ -66,7 +68,13 @@ export function MembersTable({ members }: Props) {
           </span>
         </CardTitle>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => { void handleCopy(); }}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              void handleCopy();
+            }}
+          >
             {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
             {copied ? "Copied" : "Copy CSV"}
           </Button>

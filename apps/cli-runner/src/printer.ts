@@ -11,17 +11,11 @@ export class Printer {
     const COL_TYPE = 6;
     const COL_NUM = 6;
     const COL_STATE = 8;
-    const titleWidth = Math.max(
-      10,
-      Math.min(60, Math.max(...issues.map((i) => i.title.length)))
-    );
-    const authorWidth = Math.max(
-      6,
-      Math.max(...issues.map((i) => i.author.length))
-    );
+    const titleWidth = Math.max(10, Math.min(60, Math.max(...issues.map((i) => i.title.length))));
+    const authorWidth = Math.max(6, Math.max(...issues.map((i) => i.author.length)));
     const assigneesWidth = Math.max(
       9,
-      Math.max(...issues.map((i) => (i.assignees.length ? i.assignees.join(", ").length : 1)))
+      Math.max(...issues.map((i) => (i.assignees.length ? i.assignees.join(", ").length : 1))),
     );
 
     const pad = (s: string, n: number) => s.slice(0, n).padEnd(n);
@@ -56,7 +50,7 @@ export class Printer {
           "  " +
           pad(issue.author, authorWidth) +
           "  " +
-          pad(issue.assignees.length ? issue.assignees.join(", ") : "—", assigneesWidth)
+          pad(issue.assignees.length ? issue.assignees.join(", ") : "—", assigneesWidth),
       );
     }
   }
@@ -77,11 +71,16 @@ export class Printer {
     const COL_CREATED = 10;
 
     const header =
-      pad("Login", COL_LOGIN) + "  " +
-      pad("Name", COL_NAME) + "  " +
-      pad("Email", COL_EMAIL) + "  " +
-      pad("Talent ID", COL_TALENT) + "  " +
-      pad("Job Role", COL_ROLE) + "  " +
+      pad("Login", COL_LOGIN) +
+      "  " +
+      pad("Name", COL_NAME) +
+      "  " +
+      pad("Email", COL_EMAIL) +
+      "  " +
+      pad("Talent ID", COL_TALENT) +
+      "  " +
+      pad("Job Role", COL_ROLE) +
+      "  " +
       "Created";
 
     const divider = "-".repeat(header.length + COL_CREATED - 7);
@@ -91,12 +90,17 @@ export class Printer {
 
     for (const member of members) {
       console.log(
-        pad(member.login, COL_LOGIN) + "  " +
-        pad(member.name ?? "—", COL_NAME) + "  " +
-        pad(member.email ?? "—", COL_EMAIL) + "  " +
-        pad(member.talentId ?? "—", COL_TALENT) + "  " +
-        pad(member.jobRole ?? "—", COL_ROLE) + "  " +
-        member.createdAt.slice(0, 10)
+        pad(member.login, COL_LOGIN) +
+          "  " +
+          pad(member.name ?? "—", COL_NAME) +
+          "  " +
+          pad(member.email ?? "—", COL_EMAIL) +
+          "  " +
+          pad(member.talentId ?? "—", COL_TALENT) +
+          "  " +
+          pad(member.jobRole ?? "—", COL_ROLE) +
+          "  " +
+          member.createdAt.slice(0, 10),
       );
     }
   }

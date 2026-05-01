@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others \"npm run dev:server\" \"npm run dev:client\"",
+    "lint": "eslint src",
     "dev:server": "tsx watch src/server/index.ts",
     "dev:client": "vite",
     "build": "npm run build:server && npm run build:client",

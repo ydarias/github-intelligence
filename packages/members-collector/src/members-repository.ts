@@ -1,5 +1,5 @@
-import flatCache from "flat-cache";
 import type { OrgMember } from "@github-intelligence/github-client";
+import flatCache from "flat-cache";
 
 export interface MembersRepository {
   // TODO key is an implementation detail of the cache that shouldn't  be exposed
@@ -11,9 +11,7 @@ export interface MembersRepository {
 export class FlatCacheMembersRepository implements MembersRepository {
   private readonly cacheDir: string;
 
-  constructor(
-    cacheDir = process.env["CACHE_FOLDER"] ?? "/tmp/.cache/members-collector"
-  ) {
+  constructor(cacheDir = process.env["CACHE_FOLDER"] ?? "/tmp/.cache/members-collector") {
     this.cacheDir = cacheDir;
   }
 

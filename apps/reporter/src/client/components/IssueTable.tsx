@@ -1,7 +1,8 @@
 import type { GitHubIssueDTO } from "../types.js";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./ui/table.js";
+
 import { Badge } from "./ui/badge.js";
 import { Button } from "./ui/button.js";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./ui/table.js";
 
 interface Props {
   issues: GitHubIssueDTO[];
@@ -34,9 +35,7 @@ export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
           {issues.map((issue) => (
             <TableRow key={issue.id}>
               <TableCell>
-                <Badge variant={issue.type === "pr" ? "pr" : "issue"}>
-                  {issue.type}
-                </Badge>
+                <Badge variant={issue.type === "pr" ? "pr" : "issue"}>{issue.type}</Badge>
               </TableCell>
               <TableCell>
                 <span className="text-muted text-xs font-mono">
@@ -54,9 +53,7 @@ export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
                 </a>
               </TableCell>
               <TableCell>
-                <Badge variant={issue.state === "open" ? "open" : "closed"}>
-                  {issue.state}
-                </Badge>
+                <Badge variant={issue.state === "open" ? "open" : "closed"}>{issue.state}</Badge>
               </TableCell>
               <TableCell className="text-muted text-sm">{issue.author}</TableCell>
               <TableCell className="text-muted text-sm">

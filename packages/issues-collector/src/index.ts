@@ -1,8 +1,5 @@
 export { IssuesCollector } from "./issues-collector.js";
-export {
-  FlatCacheIssuesRepository,
-  type IssuesRepository,
-} from "./issues-repository.js";
+export { FlatCacheIssuesRepository, type IssuesRepository } from "./issues-repository.js";
 export { PullRequestsCollector } from "./pull-requests-collector.js";
 export {
   FlatCachePullRequestsRepository,
