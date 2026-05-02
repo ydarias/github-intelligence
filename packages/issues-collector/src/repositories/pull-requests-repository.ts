@@ -1,10 +1,10 @@
 import type { GithubIssue } from "@github-intelligence/github-client";
 import flatCache from "flat-cache";
 
-// TODO at the repository level is really necessary to have the key? that is a cache impl detail
+// TODO now it is sync, but other implementations could be async!!!
 export interface PullRequestsRepository {
-  save(key: string, prs: GithubIssue[]): void;
-  load(key: string): GithubIssue[] | undefined;
+  saveAll(prs: GithubIssue[]): void;
+  load(id: number): GithubIssue[] | undefined;
   loadAll(): GithubIssue[];
 }
 
@@ -15,15 +15,17 @@ export class FlatCachePullRequestsRepository implements PullRequestsRepository {
     this.cacheDir = cacheDir;
   }
 
-  save(key: string, prs: GithubIssue[]): void {
+  saveAll(prs: GithubIssue[]): void {
     const cache = flatCache.create({ cacheId: "pull-requests", cacheDir: this.cacheDir });
-    cache.set(key, prs);
+    for (const pr of prs) {
+      cache.set(`${pr.id}`, [pr]);
+    }
     cache.save();
   }
 
-  load(key: string): GithubIssue[] | undefined {
+  load(id: number): GithubIssue[] | undefined {
     const cache = flatCache.create({ cacheId: "pull-requests", cacheDir: this.cacheDir });
-    return cache.get<GithubIssue[] | undefined>(key);
+    return cache.get<GithubIssue[] | undefined>(`${id}`);
   }
 
   loadAll(): GithubIssue[] {
@@ -36,7 +38,7 @@ export class FlatCachePullRequestsRepository implements PullRequestsRepository {
       for (const pr of cached) {
         if (!seen.has(pr.id)) {
           seen.add(pr.id);
-          prs.push({ ...pr, type: "pr" });
+          prs.push({ ...pr });
         }
       }
     }

@@ -1,10 +1,10 @@
 import type { GithubIssue } from "@github-intelligence/github-client";
 import flatCache from "flat-cache";
 
+// TODO now it is sync, but other implementations could be async!!!
 export interface IssuesRepository {
-  // TODO key is an implementation detail of the cache that shouldn't  be exposed
-  save(key: string, issues: GithubIssue[]): void;
-  load(key: string): GithubIssue[] | undefined;
+  saveAll(issues: GithubIssue[]): void;
+  loadAll(): GithubIssue[];
 }
 
 export class FlatCacheIssuesRepository implements IssuesRepository {
@@ -14,15 +14,12 @@ export class FlatCacheIssuesRepository implements IssuesRepository {
     this.cacheDir = cacheDir;
   }
 
-  save(key: string, issues: GithubIssue[]): void {
+  saveAll(issues: GithubIssue[]): void {
     const cache = flatCache.create({ cacheId: "issues", cacheDir: this.cacheDir });
-    cache.set(key, issues);
+    for (const issue of issues) {
+      cache.set(`${issue.id}`, [issue]);
+    }
     cache.save();
-  }
-
-  load(key: string): GithubIssue[] | undefined {
-    const cache = flatCache.create({ cacheId: "issues", cacheDir: this.cacheDir });
-    return cache.get<GithubIssue[] | undefined>(key);
   }
 
   loadAll(): GithubIssue[] {
@@ -35,7 +32,7 @@ export class FlatCacheIssuesRepository implements IssuesRepository {
       for (const issue of cached) {
         if (!seen.has(issue.id)) {
           seen.add(issue.id);
-          issues.push({ ...issue, type: "issue" });
+          issues.push({ ...issue });
         }
       }
     }
