@@ -48,6 +48,43 @@ export interface ReportResponse {
   repositories: RepositoryReport[];
 }
 
+export interface AgingWipItem {
+  id: number;
+  number: number;
+  title: string;
+  url: string;
+  repository: string;
+  type: "issue" | "pr";
+  ageDays: number;
+  author: string;
+  assignees: string[];
+  labels: string[];
+}
+
+export interface WeeklyThroughput {
+  week: string;
+  issues: number;
+  prs: number;
+}
+
+export interface ThroughputResponse {
+  byWeek: WeeklyThroughput[];
+}
+
+export interface CycleTimeItem {
+  id: number;
+  title: string;
+  url: string;
+  repository: string;
+  type: "issue" | "pr";
+  closeDate: string;
+  cycleDays: number;
+}
+
+export interface CycleTimeResponse {
+  items: CycleTimeItem[];
+}
+
 export interface OrgMember {
   id: number;
   login: string;

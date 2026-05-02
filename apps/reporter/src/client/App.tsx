@@ -1,7 +1,9 @@
 import { X, List, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { fetchIssues, fetchMembers, fetchReport } from "./api.js";
+import { fetchAgingWip, fetchCycleTime, fetchIssues, fetchMembers, fetchReport, fetchThroughput } from "./api.js";
+import { AgingWipTable } from "./components/AgingWipTable.js";
+import { CycleTimeScatterPlot } from "./components/CycleTimeScatterPlot.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
 import { MembersTable } from "./components/MembersTable.js";
@@ -9,13 +11,17 @@ import { ReportView } from "./components/ReportView.js";
 import { SearchForm, DEFAULT_FILTERS } from "./components/SearchForm.js";
 import type { SearchFilters } from "./components/SearchForm.js";
 import { StatsSummary } from "./components/StatsSummary.js";
+import { ThroughputChart } from "./components/ThroughputChart.js";
 import type {
+  AgingWipItem,
+  CycleTimeResponse,
   IssuesResponse,
   IssueStats,
   GitHubIssueDTO,
   TimeToClosePercentiles,
   OrgMember,
   ReportResponse,
+  ThroughputResponse,
 } from "./types.js";
 
 function nearestRankPercentile(sorted: number[], p: number): number {
@@ -100,7 +106,7 @@ function computeFilteredStats(
 const PAGE_SIZE = 50;
 
 type Status = "loading" | "error" | "success";
-type View = "issues" | "members" | "report";
+type View = "issues" | "members" | "report" | "metrics";
 
 export function App() {
   const [view, setView] = useState<View>("issues");
@@ -111,6 +117,11 @@ export function App() {
   const [report, setReport] = useState<ReportResponse | null>(null);
   const [reportStatus, setReportStatus] = useState<Status>("loading");
   const [reportError, setReportError] = useState<string | null>(null);
+  const [agingWip, setAgingWip] = useState<AgingWipItem[]>([]);
+  const [throughput, setThroughput] = useState<ThroughputResponse | null>(null);
+  const [cycleTime, setCycleTime] = useState<CycleTimeResponse | null>(null);
+  const [metricsStatus, setMetricsStatus] = useState<Status>("loading");
+  const [metricsError, setMetricsError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const [showIssues, setShowIssues] = useState(false);
@@ -147,6 +158,17 @@ export function App() {
       .catch((e: unknown) => {
         setReportError(e instanceof Error ? e.message : "Unknown error");
         setReportStatus("error");
+      });
+    Promise.all([fetchAgingWip(), fetchThroughput(), fetchCycleTime()])
+      .then(([wip, tp, ct]) => {
+        setAgingWip(wip);
+        setThroughput(tp);
+        setCycleTime(ct);
+        setMetricsStatus("success");
+      })
+      .catch((e: unknown) => {
+        setMetricsError(e instanceof Error ? e.message : "Unknown error");
+        setMetricsStatus("error");
       });
   }, []);
 
@@ -219,6 +241,12 @@ export function App() {
             >
               Report
             </button>
+            <button
+              onClick={() => setView("metrics")}
+              className={`text-sm font-medium transition-colors ${view === "metrics" ? "text-text" : "text-muted hover:text-text"}`}
+            >
+              Metrics
+            </button>
           </nav>
         </div>
         <button
@@ -232,6 +260,24 @@ export function App() {
 
       <main className="mx-auto max-w-7xl px-8 py-8">
         {view === "members" && <MembersTable members={members} />}
+
+        {view === "metrics" && (
+          <>
+            {metricsStatus === "loading" && (
+              <p className="text-muted text-sm animate-pulse">Loading…</p>
+            )}
+            {metricsStatus === "error" && (
+              <p className="text-red-400 text-sm">{metricsError}</p>
+            )}
+            {metricsStatus === "success" && (
+              <>
+                <AgingWipTable items={agingWip} />
+                <ThroughputChart byWeek={throughput?.byWeek ?? []} />
+                <CycleTimeScatterPlot items={cycleTime?.items ?? []} />
+              </>
+            )}
+          </>
+        )}
 
         {view === "report" && (
           <>
