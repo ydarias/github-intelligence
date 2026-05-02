@@ -1,7 +1,8 @@
 import type { GitHubClient, GithubIssue } from "@github-intelligence/github-client";
 
-import type { PullRequestsRepository } from "./pull-requests-repository.js";
-import type { FetchIssuesOptions } from "./types.js";
+import type { PullRequestsRepository } from "../repositories/pull-requests-repository.js";
+
+import {FetchIssuesOptions} from "../types/fetchIssuesOptions.js";
 
 export class PullRequestsCollector {
   constructor(
