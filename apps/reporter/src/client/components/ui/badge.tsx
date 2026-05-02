@@ -12,6 +12,7 @@ const badgeVariants = cva(
         pr: "border-accent/30 bg-accent/10 text-accent",
         open: "border-emerald/30 bg-emerald/10 text-emerald",
         closed: "border-accent/30 bg-accent/10 text-accent",
+        label: "border-border bg-surface text-muted",
       },
     },
     defaultVariants: {

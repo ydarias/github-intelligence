@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { LabelPicker } from "./LabelPicker.js";
 import { Button } from "./ui/button.js";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
 import { Checkbox } from "./ui/checkbox.js";
@@ -13,6 +14,7 @@ export interface SearchFilters {
   state: "all" | "open" | "closed";
   author: string;
   assignee: string;
+  labels: string[];
   oneDayOnly: boolean;
 }
 
@@ -22,16 +24,18 @@ export const DEFAULT_FILTERS: SearchFilters = {
   state: "all",
   author: "",
   assignee: "",
+  labels: [],
   oneDayOnly: false,
 };
 
 interface Props {
   authors: string[];
   assignees: string[];
+  labels: string[];
   onSearch: (filters: SearchFilters) => void;
 }
 
-export function SearchForm({ authors, assignees, onSearch }: Props) {
+export function SearchForm({ authors, assignees, labels, onSearch }: Props) {
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
 
   function handleReset() {
@@ -123,6 +127,13 @@ export function SearchForm({ authors, assignees, onSearch }: Props) {
               ))}
             </SelectContent>
           </Select>
+
+          <Label>Labels</Label>
+          <LabelPicker
+            available={labels}
+            selected={filters.labels}
+            onChange={(selected) => setFilters((f) => ({ ...f, labels: selected }))}
+          />
 
           <Label htmlFor="filter-oneday">One Day?</Label>
           <Checkbox

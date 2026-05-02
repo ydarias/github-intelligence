@@ -27,6 +27,7 @@ export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
             <TableHead>State</TableHead>
             <TableHead>Author</TableHead>
             <TableHead>Assignees</TableHead>
+            <TableHead>Labels</TableHead>
             <TableHead>Created</TableHead>
             <TableHead>Closed</TableHead>
           </TableRow>
@@ -58,6 +59,15 @@ export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
               <TableCell className="text-muted text-sm">{issue.author}</TableCell>
               <TableCell className="text-muted text-sm">
                 {issue.assignees?.length ? issue.assignees.join(", ") : "—"}
+              </TableCell>
+              <TableCell>
+                {issue.labels?.length ? (
+                  <div className="flex flex-wrap gap-1">
+                    {issue.labels.map((label) => (
+                      <Badge key={label} variant="label">{label}</Badge>
+                    ))}
+                  </div>
+                ) : "—"}
               </TableCell>
               <TableCell className="text-muted text-sm tabular-nums">
                 {issue.createdAt.slice(0, 10)}

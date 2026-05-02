@@ -161,6 +161,10 @@ export function App() {
     ? Array.from(new Set(data.issues.flatMap((i) => i.assignees ?? []))).sort()
     : [];
 
+  const labels = data
+    ? Array.from(new Set(data.issues.flatMap((i) => i.labels ?? []))).sort()
+    : [];
+
   const filteredIssues = data
     ? data.issues.filter((i) => {
         if (filters.type !== "all" && i.type !== filters.type) return false;
@@ -169,6 +173,11 @@ export function App() {
         if (filters.state !== "all" && i.state !== filters.state) return false;
         if (filters.author !== "" && i.author !== filters.author) return false;
         if (filters.assignee !== "" && !(i.assignees ?? []).includes(filters.assignee))
+          return false;
+        if (
+          filters.labels.length > 0 &&
+          !filters.labels.some((l) => (i.labels ?? []).includes(l))
+        )
           return false;
         if (
           filters.oneDayOnly &&
@@ -248,7 +257,7 @@ export function App() {
         {view === "issues" && status === "success" && data !== null && (
           <>
             <div className="grid grid-cols-2 gap-6 mb-8">
-              <SearchForm authors={authors} assignees={assignees} onSearch={handleSearch} />
+              <SearchForm authors={authors} assignees={assignees} labels={labels} onSearch={handleSearch} />
               <StatsSummary stats={filteredStats!} />
             </div>
 
