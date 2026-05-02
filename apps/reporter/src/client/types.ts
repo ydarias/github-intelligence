@@ -39,6 +39,15 @@ export interface IssuesResponse {
   total: number;
 }
 
+export interface RepositoryReport {
+  repository: string;
+  byDay: Array<{ date: string; issues: number; prs: number }>;
+}
+
+export interface ReportResponse {
+  repositories: RepositoryReport[];
+}
+
 export interface OrgMember {
   id: number;
   login: string;

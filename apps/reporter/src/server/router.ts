@@ -6,6 +6,7 @@ import {
 import { FlatCacheMembersRepository } from "@github-intelligence/members-collector";
 import { Router } from "express";
 
+import { computeReport } from "./report-stats.js";
 import { computeStats } from "./stats.js";
 
 export const router = Router();
@@ -30,4 +31,17 @@ router.get("/issues", (_req, res) => {
 router.get("/members", (_req, res) => {
   const repo = new FlatCacheMembersRepository(process.env["CACHE_FOLDER"]);
   res.json(repo.loadAll());
+});
+
+router.get("/report", (_req, res) => {
+  const issuesRepo = new FlatCacheIssuesRepository(process.env["CACHE_FOLDER"]);
+  const prsRepo = new FlatCachePullRequestsRepository(process.env["CACHE_FOLDER"]);
+  const items = [...issuesRepo.loadAll(), ...prsRepo.loadAll()];
+
+  if (items.length === 0) {
+    res.status(404).json({ error: "No cached issues found. Run the CLI first." });
+    return;
+  }
+
+  res.json(computeReport(items));
 });

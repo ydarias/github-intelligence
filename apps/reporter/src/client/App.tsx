@@ -1,10 +1,11 @@
 import { X, List, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { fetchIssues, fetchMembers } from "./api.js";
+import { fetchIssues, fetchMembers, fetchReport } from "./api.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
 import { MembersTable } from "./components/MembersTable.js";
+import { ReportView } from "./components/ReportView.js";
 import { SearchForm, DEFAULT_FILTERS } from "./components/SearchForm.js";
 import type { SearchFilters } from "./components/SearchForm.js";
 import { StatsSummary } from "./components/StatsSummary.js";
@@ -14,6 +15,7 @@ import type {
   GitHubIssueDTO,
   TimeToClosePercentiles,
   OrgMember,
+  ReportResponse,
 } from "./types.js";
 
 function nearestRankPercentile(sorted: number[], p: number): number {
@@ -98,7 +100,7 @@ function computeFilteredStats(
 const PAGE_SIZE = 50;
 
 type Status = "loading" | "error" | "success";
-type View = "issues" | "members";
+type View = "issues" | "members" | "report";
 
 export function App() {
   const [view, setView] = useState<View>("issues");
@@ -106,6 +108,9 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<IssuesResponse | null>(null);
   const [members, setMembers] = useState<OrgMember[]>([]);
+  const [report, setReport] = useState<ReportResponse | null>(null);
+  const [reportStatus, setReportStatus] = useState<Status>("loading");
+  const [reportError, setReportError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const [showIssues, setShowIssues] = useState(false);
@@ -134,6 +139,15 @@ export function App() {
     fetchMembers()
       .then(setMembers)
       .catch(() => {});
+    fetchReport()
+      .then((result) => {
+        setReport(result);
+        setReportStatus("success");
+      })
+      .catch((e: unknown) => {
+        setReportError(e instanceof Error ? e.message : "Unknown error");
+        setReportStatus("error");
+      });
   }, []);
 
   function handleSearch(newFilters: SearchFilters) {
@@ -190,6 +204,12 @@ export function App() {
             >
               Members
             </button>
+            <button
+              onClick={() => setView("report")}
+              className={`text-sm font-medium transition-colors ${view === "report" ? "text-text" : "text-muted hover:text-text"}`}
+            >
+              Report
+            </button>
           </nav>
         </div>
         <button
@@ -203,6 +223,20 @@ export function App() {
 
       <main className="mx-auto max-w-7xl px-8 py-8">
         {view === "members" && <MembersTable members={members} />}
+
+        {view === "report" && (
+          <>
+            {reportStatus === "loading" && (
+              <p className="text-muted text-sm animate-pulse">Loading…</p>
+            )}
+            {reportStatus === "error" && (
+              <p className="text-red-400 text-sm">{reportError}</p>
+            )}
+            {reportStatus === "success" && report !== null && (
+              <ReportView repositories={report.repositories} />
+            )}
+          </>
+        )}
 
         {view === "issues" && (
           <>

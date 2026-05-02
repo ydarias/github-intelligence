@@ -1,4 +1,4 @@
-import type { IssuesResponse, OrgMember } from "./types.js";
+import type { IssuesResponse, OrgMember, ReportResponse } from "./types.js";
 
 export async function fetchIssues(): Promise<IssuesResponse> {
   const response = await fetch("/api/issues");
@@ -19,4 +19,15 @@ export async function fetchMembers(): Promise<OrgMember[]> {
   }
 
   return response.json() as Promise<OrgMember[]>;
+}
+
+export async function fetchReport(): Promise<ReportResponse> {
+  const response = await fetch("/api/report");
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error((err as { error?: string }).error ?? "Request failed");
+  }
+
+  return response.json() as Promise<ReportResponse>;
 }

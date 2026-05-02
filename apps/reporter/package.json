@@ -13,6 +13,7 @@
     "build:client": "vite build",
     "type-check": "tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.client.json --noEmit",
     "start": "node dist/server/index.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs",
     "clean": "rm -rf dist"
   },
   "dependencies": {
