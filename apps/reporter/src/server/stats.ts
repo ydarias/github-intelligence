@@ -7,6 +7,14 @@ export interface TimeToClosePercentiles {
   p99: number;
 }
 
+export interface MonthlyTimeToClose {
+  month: string;
+  p50: number;
+  p75: number;
+  p90: number;
+  p99: number;
+}
+
 export interface IssueStats {
   total: number;
   open: number;
@@ -17,6 +25,7 @@ export interface IssueStats {
   avgIssuesPerDay: number;
   avgPRsPerDay: number;
   timeToClosePercentiles: TimeToClosePercentiles | null;
+  timeToCloseByMonth: MonthlyTimeToClose[];
   byDay: Array<{ date: string; issues: number; prs: number }>;
 }
 
@@ -32,6 +41,33 @@ function calendarDaysInRange(dates: string[]): number {
   return (
     Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1
   );
+}
+
+export function computeTimeToCloseByMonth(items: GithubIssue[]): MonthlyTimeToClose[] {
+  const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
+
+  const byMonth = new Map<string, number[]>();
+  for (const item of closedItems) {
+    const month = item.closedAt!.slice(0, 7);
+    const hours =
+      (new Date(item.closedAt!).getTime() - new Date(item.createdAt).getTime()) / (1000 * 60 * 60);
+    const bucket = byMonth.get(month) ?? [];
+    bucket.push(hours);
+    byMonth.set(month, bucket);
+  }
+
+  return Array.from(byMonth.entries())
+    .map(([month, hours]) => {
+      const sorted = [...hours].sort((a, b) => a - b);
+      return {
+        month,
+        p50: nearestRankPercentile(sorted, 50),
+        p75: nearestRankPercentile(sorted, 75),
+        p90: nearestRankPercentile(sorted, 90),
+        p99: nearestRankPercentile(sorted, 99),
+      };
+    })
+    .sort((a, b) => b.month.localeCompare(a.month));
 }
 
 export function computeStats(items: GithubIssue[]): IssueStats {
@@ -92,6 +128,7 @@ export function computeStats(items: GithubIssue[]): IssueStats {
     avgIssuesPerDay,
     avgPRsPerDay,
     timeToClosePercentiles,
+    timeToCloseByMonth: computeTimeToCloseByMonth(items),
     byDay,
   };
 }

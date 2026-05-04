@@ -1,18 +1,16 @@
-# Task List
+# Task List: Monthly Time-to-Close Breakdown
 
-## Phase 1: Server Logic
+## Task 1 — Server
 
-- [ ] **Task 1** — `computeReport()` in `report-stats.ts` + unit tests
-- [ ] **Task 2** — `GET /api/report` endpoint in `router.ts`
-- [ ] **CHECKPOINT 1** — `npm run build` from root; `npm test -- --testPathPattern report-stats`
+- [ ] Add `MonthlyTimeToClose` interface to `stats.ts`
+- [ ] Implement `computeTimeToCloseByMonth()` in `stats.ts`
+- [ ] Extend `IssueStats` with `timeToCloseByMonth` and wire into `computeStats()`
+- [ ] Write `stats.spec.ts` with all test cases
+- [ ] **CHECKPOINT A** — `npm test` green; `npm run build` clean
 
-## Phase 2: Client Wiring
+## Task 2 — Client
 
-- [ ] **Task 3** — Client types (`WeeklyPercentiles`, `RepositoryReport`, `ReportResponse`) + `fetchReport()`
-- [ ] **CHECKPOINT 2** — `npm run build` from `apps/reporter` clean
-
-## Phase 3: UI
-
-- [ ] **Task 4** — `PercentilesOverTimeChart` component
-- [ ] **Task 5** — `ReportView` component + navigation in `App.tsx`
-- [ ] **CHECKPOINT 3 (FINAL)** — `npm run build` from root; dev server smoke test
+- [ ] Add `MonthlyTimeToClose` + extend `IssueStats` in `types.ts`
+- [ ] Pass `timeToCloseByMonth` prop from `App.tsx` to `StatsSummary`
+- [ ] Add toggle button + breakdown table in `StatsSummary.tsx`
+- [ ] **CHECKPOINT B (FINAL)** — manual smoke test per plan

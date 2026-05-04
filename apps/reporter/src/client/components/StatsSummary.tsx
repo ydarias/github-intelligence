@@ -1,9 +1,12 @@
-import type { IssueStats } from "../types.js";
+import { useState } from "react";
+
+import type { IssueStats, MonthlyTimeToClose } from "../types.js";
 
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
 
 interface Props {
   stats: IssueStats;
+  timeToCloseByMonth: MonthlyTimeToClose[];
 }
 
 function formatHours(hours: number): string {
@@ -11,8 +14,9 @@ function formatHours(hours: number): string {
   return `${(hours / 24).toFixed(1)}d`;
 }
 
-export function StatsSummary({ stats }: Props) {
+export function StatsSummary({ stats, timeToCloseByMonth }: Props) {
   const { timeToClosePercentiles: p } = stats;
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <Card>
@@ -53,6 +57,42 @@ export function StatsSummary({ stats }: Props) {
               </div>
             ))}
           </div>
+
+          {timeToCloseByMonth.length > 0 && (
+            <div className="mt-3">
+              <button
+                onClick={() => setExpanded((e) => !e)}
+                className="text-xs font-medium text-muted hover:text-text transition-colors"
+              >
+                {expanded ? "Hide monthly breakdown" : "Show monthly breakdown"}
+              </button>
+
+              {expanded && (
+                <table className="mt-3 w-full text-xs">
+                  <thead>
+                    <tr className="text-[10px] uppercase tracking-widest text-muted">
+                      <th className="text-left pb-2 font-medium">Month</th>
+                      <th className="text-right pb-2 font-medium">P50</th>
+                      <th className="text-right pb-2 font-medium">P75</th>
+                      <th className="text-right pb-2 font-medium">P90</th>
+                      <th className="text-right pb-2 font-medium">P99</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {timeToCloseByMonth.map((row) => (
+                      <tr key={row.month} className="border-t border-border">
+                        <td className="py-1.5 text-muted">{row.month}</td>
+                        <td className="py-1.5 text-right text-text">{formatHours(row.p50)}</td>
+                        <td className="py-1.5 text-right text-text">{formatHours(row.p75)}</td>
+                        <td className="py-1.5 text-right text-text">{formatHours(row.p90)}</td>
+                        <td className="py-1.5 text-right text-text">{formatHours(row.p99)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

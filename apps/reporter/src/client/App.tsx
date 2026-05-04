@@ -1,7 +1,14 @@
 import { X, List, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { fetchAgingWip, fetchCycleTime, fetchIssues, fetchMembers, fetchReport, fetchThroughput } from "./api.js";
+import {
+  fetchAgingWip,
+  fetchCycleTime,
+  fetchIssues,
+  fetchMembers,
+  fetchReport,
+  fetchThroughput,
+} from "./api.js";
 import { AgingWipTable } from "./components/AgingWipTable.js";
 import { CycleTimeScatterPlot } from "./components/CycleTimeScatterPlot.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
@@ -18,6 +25,7 @@ import type {
   IssuesResponse,
   IssueStats,
   GitHubIssueDTO,
+  MonthlyTimeToClose,
   TimeToClosePercentiles,
   OrgMember,
   ReportResponse,
@@ -36,6 +44,31 @@ function calendarDaysInRange(dates: string[]): number {
   return (
     Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1
   );
+}
+
+function computeTimeToCloseByMonth(items: GitHubIssueDTO[]): MonthlyTimeToClose[] {
+  const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
+  const byMonth = new Map<string, number[]>();
+  for (const item of closedItems) {
+    const month = item.closedAt!.slice(0, 7);
+    const hours =
+      (new Date(item.closedAt!).getTime() - new Date(item.createdAt).getTime()) / (1000 * 60 * 60);
+    const bucket = byMonth.get(month) ?? [];
+    bucket.push(hours);
+    byMonth.set(month, bucket);
+  }
+  return Array.from(byMonth.entries())
+    .map(([month, hours]) => {
+      const sorted = [...hours].sort((a, b) => a - b);
+      return {
+        month,
+        p50: nearestRankPercentile(sorted, 50),
+        p75: nearestRankPercentile(sorted, 75),
+        p90: nearestRankPercentile(sorted, 90),
+        p99: nearestRankPercentile(sorted, 99),
+      };
+    })
+    .sort((a, b) => b.month.localeCompare(a.month));
 }
 
 function computeFilteredStats(
@@ -99,6 +132,7 @@ function computeFilteredStats(
     avgIssuesPerDay,
     avgPRsPerDay,
     timeToClosePercentiles,
+    timeToCloseByMonth: computeTimeToCloseByMonth(items),
     byDay,
   };
 }
@@ -183,9 +217,7 @@ export function App() {
     ? Array.from(new Set(data.issues.flatMap((i) => i.assignees ?? []))).sort()
     : [];
 
-  const labels = data
-    ? Array.from(new Set(data.issues.flatMap((i) => i.labels ?? []))).sort()
-    : [];
+  const labels = data ? Array.from(new Set(data.issues.flatMap((i) => i.labels ?? []))).sort() : [];
 
   const filteredIssues = data
     ? data.issues.filter((i) => {
@@ -196,10 +228,7 @@ export function App() {
         if (filters.author !== "" && i.author !== filters.author) return false;
         if (filters.assignee !== "" && !(i.assignees ?? []).includes(filters.assignee))
           return false;
-        if (
-          filters.labels.length > 0 &&
-          !filters.labels.some((l) => (i.labels ?? []).includes(l))
-        )
+        if (filters.labels.length > 0 && !filters.labels.some((l) => (i.labels ?? []).includes(l)))
           return false;
         if (
           filters.oneDayOnly &&
@@ -266,9 +295,7 @@ export function App() {
             {metricsStatus === "loading" && (
               <p className="text-muted text-sm animate-pulse">Loading…</p>
             )}
-            {metricsStatus === "error" && (
-              <p className="text-red-400 text-sm">{metricsError}</p>
-            )}
+            {metricsStatus === "error" && <p className="text-red-400 text-sm">{metricsError}</p>}
             {metricsStatus === "success" && (
               <>
                 <AgingWipTable items={agingWip} />
@@ -284,9 +311,7 @@ export function App() {
             {reportStatus === "loading" && (
               <p className="text-muted text-sm animate-pulse">Loading…</p>
             )}
-            {reportStatus === "error" && (
-              <p className="text-red-400 text-sm">{reportError}</p>
-            )}
+            {reportStatus === "error" && <p className="text-red-400 text-sm">{reportError}</p>}
             {reportStatus === "success" && report !== null && (
               <ReportView repositories={report.repositories} />
             )}
@@ -303,8 +328,16 @@ export function App() {
         {view === "issues" && status === "success" && data !== null && (
           <>
             <div className="grid grid-cols-2 gap-6 mb-8">
-              <SearchForm authors={authors} assignees={assignees} labels={labels} onSearch={handleSearch} />
-              <StatsSummary stats={filteredStats!} />
+              <SearchForm
+                authors={authors}
+                assignees={assignees}
+                labels={labels}
+                onSearch={handleSearch}
+              />
+              <StatsSummary
+                stats={filteredStats!}
+                timeToCloseByMonth={filteredStats!.timeToCloseByMonth}
+              />
             </div>
 
             <IssuesOverTimeChart byDay={filteredStats!.byDay} />

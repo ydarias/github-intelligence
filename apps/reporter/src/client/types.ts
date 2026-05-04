@@ -20,6 +20,14 @@ export interface TimeToClosePercentiles {
   p99: number;
 }
 
+export interface MonthlyTimeToClose {
+  month: string;
+  p50: number;
+  p75: number;
+  p90: number;
+  p99: number;
+}
+
 export interface IssueStats {
   total: number;
   open: number;
@@ -30,6 +38,7 @@ export interface IssueStats {
   avgIssuesPerDay: number;
   avgPRsPerDay: number;
   timeToClosePercentiles: TimeToClosePercentiles | null;
+  timeToCloseByMonth: MonthlyTimeToClose[];
   byDay: Array<{ date: string; issues: number; prs: number }>;
 }
 
