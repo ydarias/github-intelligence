@@ -30,8 +30,18 @@ describe("computeReport", () => {
 
   it("groups items by repository", () => {
     const items = [
-      makeIssue({ id: 1, repository: "owner/repo-a", createdAt: "2024-01-01T00:00:00Z", closedAt: "2024-01-02T00:00:00Z" }),
-      makeIssue({ id: 2, repository: "owner/repo-b", createdAt: "2024-01-01T00:00:00Z", closedAt: "2024-01-02T00:00:00Z" }),
+      makeIssue({
+        id: 1,
+        repository: "owner/repo-a",
+        createdAt: "2024-01-01T00:00:00Z",
+        closedAt: "2024-01-02T00:00:00Z",
+      }),
+      makeIssue({
+        id: 2,
+        repository: "owner/repo-b",
+        createdAt: "2024-01-01T00:00:00Z",
+        closedAt: "2024-01-02T00:00:00Z",
+      }),
     ];
     const result = computeReport(items, today);
     expect(result.repositories).toHaveLength(2);
@@ -43,7 +53,12 @@ describe("computeReport", () => {
   it("counts item as open on createdAt day but not on closedAt day", () => {
     // Created Jan 1, closed Jan 3 → open on Jan 1, Jan 2 only
     const items = [
-      makeIssue({ id: 1, type: "issue", createdAt: "2024-01-01T00:00:00Z", closedAt: "2024-01-03T00:00:00Z" }),
+      makeIssue({
+        id: 1,
+        type: "issue",
+        createdAt: "2024-01-01T00:00:00Z",
+        closedAt: "2024-01-03T00:00:00Z",
+      }),
     ];
     const result = computeReport(items, "2024-01-03");
     const byDay = result.repositories[0]!.byDay;
@@ -64,20 +79,52 @@ describe("computeReport", () => {
 
   it("counts issues and PRs independently per day", () => {
     const items = [
-      makeIssue({ id: 1, type: "issue", createdAt: "2024-01-01T00:00:00Z", closedAt: "2024-01-03T00:00:00Z" }),
-      makeIssue({ id: 2, type: "pr",    createdAt: "2024-01-01T00:00:00Z", closedAt: "2024-01-02T00:00:00Z" }),
+      makeIssue({
+        id: 1,
+        type: "issue",
+        createdAt: "2024-01-01T00:00:00Z",
+        closedAt: "2024-01-03T00:00:00Z",
+      }),
+      makeIssue({
+        id: 2,
+        type: "pr",
+        createdAt: "2024-01-01T00:00:00Z",
+        closedAt: "2024-01-02T00:00:00Z",
+      }),
     ];
     const result = computeReport(items, "2024-01-03");
     const byDay = result.repositories[0]!.byDay;
-    expect(byDay.find((d) => d.date === "2024-01-01")).toEqual({ date: "2024-01-01", issues: 1, prs: 1 });
-    expect(byDay.find((d) => d.date === "2024-01-02")).toEqual({ date: "2024-01-02", issues: 1, prs: 0 });
-    expect(byDay.find((d) => d.date === "2024-01-03")).toEqual({ date: "2024-01-03", issues: 0, prs: 0 });
+    expect(byDay.find((d) => d.date === "2024-01-01")).toEqual({
+      date: "2024-01-01",
+      issues: 1,
+      prs: 1,
+    });
+    expect(byDay.find((d) => d.date === "2024-01-02")).toEqual({
+      date: "2024-01-02",
+      issues: 1,
+      prs: 0,
+    });
+    expect(byDay.find((d) => d.date === "2024-01-03")).toEqual({
+      date: "2024-01-03",
+      issues: 0,
+      prs: 0,
+    });
   });
 
   it("accumulates multiple items open on the same day", () => {
     const items = [
-      makeIssue({ id: 1, type: "issue", createdAt: "2024-01-01T00:00:00Z", closedAt: "2024-01-05T00:00:00Z" }),
-      makeIssue({ id: 2, type: "issue", createdAt: "2024-01-02T00:00:00Z", closedAt: "2024-01-05T00:00:00Z" }),
+      makeIssue({
+        id: 1,
+        type: "issue",
+        createdAt: "2024-01-01T00:00:00Z",
+        closedAt: "2024-01-05T00:00:00Z",
+      }),
+      makeIssue({
+        id: 2,
+        type: "issue",
+        createdAt: "2024-01-02T00:00:00Z",
+        closedAt: "2024-01-05T00:00:00Z",
+      }),
     ];
     const result = computeReport(items, "2024-01-05");
     const byDay = result.repositories[0]!.byDay;

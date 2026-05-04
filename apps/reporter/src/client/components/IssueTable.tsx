@@ -64,10 +64,14 @@ export function IssueTable({ issues, page, totalPages, onPageChange }: Props) {
                 {issue.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
                     {issue.labels.map((label) => (
-                      <Badge key={label} variant="label">{label}</Badge>
+                      <Badge key={label} variant="label">
+                        {label}
+                      </Badge>
                     ))}
                   </div>
-                ) : "—"}
+                ) : (
+                  "—"
+                )}
               </TableCell>
               <TableCell className="text-muted text-sm tabular-nums">
                 {issue.createdAt.slice(0, 10)}

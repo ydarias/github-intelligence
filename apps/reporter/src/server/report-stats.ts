@@ -58,9 +58,7 @@ function openCountsByDay(
     }
   }
 
-  const minDay = allItems
-    .map((i) => i.createdAt.slice(0, 10))
-    .reduce((a, b) => (a < b ? a : b));
+  const minDay = allItems.map((i) => i.createdAt.slice(0, 10)).reduce((a, b) => (a < b ? a : b));
 
   let runningIssues = 0;
   let runningPrs = 0;

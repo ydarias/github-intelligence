@@ -52,7 +52,10 @@ export function LabelPicker({ available, selected, onChange }: Props) {
         ))}
         <input
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           onKeyDown={handleKeyDown}

@@ -1,4 +1,5 @@
 import type { RepositoryReport } from "../types.js";
+
 import { IssuesOverTimeChart } from "./IssuesOverTimeChart.js";
 
 interface Props {

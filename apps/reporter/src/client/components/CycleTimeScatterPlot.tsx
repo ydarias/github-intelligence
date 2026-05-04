@@ -47,11 +47,18 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
         href={url}
         target="_blank"
         rel="noreferrer"
-        style={{ color: "oklch(0.70 0.17 250)", display: "block", marginBottom: "4px", wordBreak: "break-word" }}
+        style={{
+          color: "oklch(0.70 0.17 250)",
+          display: "block",
+          marginBottom: "4px",
+          wordBreak: "break-word",
+        }}
       >
         {title}
       </a>
-      <div style={{ color: "oklch(0.55 0 0)" }}>{closeDate} · {cycleDays}d</div>
+      <div style={{ color: "oklch(0.55 0 0)" }}>
+        {closeDate} · {cycleDays}d
+      </div>
     </div>
   );
 }
@@ -69,9 +76,7 @@ export function CycleTimeScatterPlot({ items }: Props) {
 
   return (
     <div className="rounded-xl border border-border bg-panel p-5 mb-6">
-      <p className="text-xs font-medium uppercase tracking-widest text-muted mb-4">
-        Cycle Time
-      </p>
+      <p className="text-xs font-medium uppercase tracking-widest text-muted mb-4">Cycle Time</p>
       <ResponsiveContainer width="100%" height={260}>
         <ScatterChart>
           <CartesianGrid stroke="oklch(0.28 0 0)" strokeDasharray="0" />

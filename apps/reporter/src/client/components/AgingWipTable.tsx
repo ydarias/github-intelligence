@@ -32,7 +32,10 @@ export function AgingWipTable({ items }: Props) {
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr key={item.id} className="border-b border-border/50 hover:bg-surface/50 transition-colors">
+              <tr
+                key={item.id}
+                className="border-b border-border/50 hover:bg-surface/50 transition-colors"
+              >
                 <td className="py-2 pr-4 max-w-xs">
                   <a
                     href={item.url}
@@ -48,7 +51,9 @@ export function AgingWipTable({ items }: Props) {
                 <td className="py-2 pr-4">
                   <span className="text-xs uppercase tracking-wide text-muted">{item.type}</span>
                 </td>
-                <td className={`py-2 pr-4 text-right font-mono font-semibold ${ageColor(item.ageDays)}`}>
+                <td
+                  className={`py-2 pr-4 text-right font-mono font-semibold ${ageColor(item.ageDays)}`}
+                >
                   {item.ageDays}
                 </td>
                 <td className="py-2 pr-4 text-muted text-xs">{item.author}</td>

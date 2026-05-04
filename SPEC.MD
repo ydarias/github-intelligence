@@ -1,128 +1,127 @@
-# Spec: Report View — Time-to-Close Percentiles per Repository
+# Spec: Monthly Time-to-Close Breakdown
 
 ## Objective
 
-Add a "Report" top-level view to the reporter app that displays time-to-close trends for issues and PRs, broken down by repository and grouped by ISO week. Each repository gets two line charts (one for issues, one for PRs), each showing p50, p75, p90, and p99 percentiles on the Y-axis over time on the X-axis.
+In the Issues view, let users expand a monthly breakdown of time-to-close percentiles directly inside the `StatsSummary` component. The breakdown is hidden by default and toggled by a button. It reacts to all active filters.
 
-## Navigation
+## Target users
 
-- Add `"report"` to the `View` union type in `App.tsx`.
-- Add a "Report" nav button in the header alongside "Issues" and "Members", using the same styling pattern.
+Anyone using the reporter app to understand issue/PR resolution speed trends over time.
 
-## Data Flow
+---
 
-### Server
+## Behaviour
 
-**New endpoint**: `GET /api/report`
+### Toggle button
 
-Loads all items from `FlatCacheIssuesRepository` and `FlatCachePullRequestsRepository` (same as `/api/issues`), then:
+- Placed inside `StatsSummary`, immediately after the existing "Time to Close" percentile row.
+- Label: "Show monthly breakdown" / "Hide monthly breakdown".
+- Default state: collapsed (breakdown hidden).
+- Rendered only when there is at least one closed item in the filtered dataset.
 
-1. Filters to closed items only (`state === "closed"` and `closedAt !== null`).
-2. Groups by `repository`.
-3. Within each repository, groups by `type` ("issue" vs "pr").
-4. Within each type group, groups by ISO week of `closedAt` (week start = Monday, formatted as `"YYYY-MM-DD"`).
-5. For each week bucket, computes time-to-close in hours and derives p50, p75, p90, p99 using the nearest-rank method (same as existing `stats.ts`).
+### Monthly breakdown table
 
-Returns:
-```ts
-interface ReportResponse {
-  repositories: RepositoryReport[];
-}
+When expanded, renders a table with one row per calendar month that has at least one closed item in the current filtered dataset.
 
-interface RepositoryReport {
-  repository: string;
-  issues: WeeklyPercentiles[];
-  prs: WeeklyPercentiles[];
-}
+| Month   | p50 | p75 | p90 | p99 |
+| ------- | --- | --- | --- | --- |
+| 2025-04 | 2d  | 5d  | 12d | 30d |
+| 2025-03 | 1d  | 3d  | 8d  | 20d |
 
-interface WeeklyPercentiles {
-  week: string;        // ISO week start date: "YYYY-MM-DD" (Monday)
-  p50: number;         // hours
+- Months sorted most-recent first.
+- Values formatted with the same helper used for the aggregate percentiles (hours → `Xh`, days → `Xd`).
+- Months with no closed items are omitted.
+
+### Filter reactivity
+
+The table recomputes whenever the filters in `SearchForm` change (type, state, author, assignee, labels), because it draws from the same `IssuesResponse.stats` object already fetched by `App.tsx` — no additional requests.
+
+---
+
+## Data flow
+
+### Server — `stats.ts`
+
+Add `computeTimeToCloseByMonth(items: GithubIssue[]): MonthlyTimeToClose[]`:
+
+1. Filter to `state === "closed" && closedAt !== null`.
+2. Group by `closedAt.slice(0, 7)` (→ `YYYY-MM`).
+3. For each group, sort time-to-close hours ascending and apply `nearestRankPercentile` for p50/p75/p90/p99.
+4. Return array sorted descending by month string (most recent first).
+
+Call it inside `computeStats` and include the result in `IssueStats`.
+
+### Types
+
+Add to both `apps/reporter/src/server/stats.ts` (server) and `apps/reporter/src/client/types.ts` (client DTO):
+
+```typescript
+export interface MonthlyTimeToClose {
+  month: string; // "YYYY-MM"
+  p50: number; // hours
   p75: number;
   p90: number;
   p99: number;
 }
 ```
 
-Weeks with no closed items are omitted (no zero-filling). Results sorted by `week` ascending within each group.
+Extend `IssueStats`:
 
-Returns `404` with `{ error: "..." }` if no cached data is found.
+```typescript
+timeToCloseByMonth: MonthlyTimeToClose[];   // [] when no closed items
+```
 
-**New file**: `apps/reporter/src/server/report-stats.ts` — contains the grouping and percentile computation logic, exported as `computeReport(items: GithubIssue[]): ReportResponse`.
+No new API endpoint — the data rides in the existing `GET /api/issues` response.
 
-### Client
+---
 
-**New types** added to `apps/reporter/src/client/types.ts`:
-- `WeeklyPercentiles`
-- `RepositoryReport`
-- `ReportResponse`
+## Component changes
 
-**New fetch function** in `apps/reporter/src/client/api.ts`:
-- `fetchReport(): Promise<ReportResponse>`
+### `StatsSummary.tsx`
 
-## Components
+- Accept `timeToCloseByMonth: MonthlyTimeToClose[]` as a prop.
+- Local `useState<boolean>` for expanded/collapsed.
+- Render toggle button only when `timeToCloseByMonth.length > 0`.
+- Render table below the button when expanded.
 
-### `PercentilesOverTimeChart`
+### `App.tsx`
 
-**File**: `apps/reporter/src/client/components/PercentilesOverTimeChart.tsx`
+- Pass `stats.timeToCloseByMonth` down to `StatsSummary`.
 
-A Recharts `LineChart` with:
-- X-axis: `week` (formatted as short date, e.g. "Jan 06")
-- Y-axis: hours (no unit suffix on axis ticks)
-- 4 lines: p50, p75, p90, p99 — each a distinct color
-- Legend showing the four percentile labels
-- Tooltip showing all four values on hover
-- `title` prop (e.g. "Issues" or "Pull Requests") rendered above the chart
+---
 
-### `ReportView`
+## Files touched
 
-**File**: `apps/reporter/src/client/components/ReportView.tsx`
+```
+apps/reporter/src/
+  server/
+    stats.ts          ← add MonthlyTimeToClose interface + computation, extend IssueStats
+  client/
+    types.ts          ← add MonthlyTimeToClose, extend IssueStats
+    components/
+      StatsSummary.tsx  ← toggle button + breakdown table
+```
 
-Renders one section per repository:
-- Section heading: repository name
-- Two `PercentilesOverTimeChart` side-by-side: Issues on the left, Pull Requests on the right
-- If a repository has no closed data for issues or PRs, that chart renders an empty state ("No closed issues" / "No closed pull requests")
+No new files required.
 
-### `App.tsx` changes
+---
 
-- Add `"report"` to `View` type.
-- Add "Report" nav button.
-- On `view === "report"`: fetch from `/api/report` and render `<ReportView />`.
-- Loading and error states follow the same pattern as the Issues view.
+## Testing strategy
 
-## Files to Create
+Unit-test `computeTimeToCloseByMonth` in `stats.ts`:
 
-| File | Purpose |
-|---|---|
-| `apps/reporter/src/server/report-stats.ts` | `computeReport()` — grouping + percentile logic |
-| `apps/reporter/src/client/components/PercentilesOverTimeChart.tsx` | Recharts line chart for weekly percentiles |
-| `apps/reporter/src/client/components/ReportView.tsx` | Layout: one section per repository |
+- Returns `[]` when no closed items.
+- Groups correctly by month (items from different months stay separate).
+- Sorts most-recent month first.
+- Omits months with no closed items.
+- Percentile values match `nearestRankPercentile` applied to that month's hours.
 
-## Files to Modify
+No UI tests for the toggle (trivial local state).
 
-| File | Change |
-|---|---|
-| `apps/reporter/src/server/router.ts` | Add `GET /api/report` route |
-| `apps/reporter/src/client/types.ts` | Add `WeeklyPercentiles`, `RepositoryReport`, `ReportResponse` |
-| `apps/reporter/src/client/api.ts` | Add `fetchReport()` |
-| `apps/reporter/src/client/App.tsx` | Add `"report"` view, nav button, fetch + render |
-
-## Testing Strategy
-
-Unit tests for `computeReport()` in `report-stats.spec.ts`:
-- Groups items by repository correctly
-- Groups items by type correctly
-- Groups by ISO week of `closedAt`
-- Computes p50/p75/p90/p99 correctly (nearest-rank)
-- Omits open items
-- Returns empty arrays for a type with no closed items
-- Sorts weeks ascending
-
-No tests for React components (consistent with existing codebase — no component tests exist).
+---
 
 ## Boundaries
 
-- Never zero-fill missing weeks — omit them so sparse data stays readable.
-- Y-axis unit is hours (consistent with existing `stats.ts`).
-- Do not modify the existing `/api/issues` endpoint or any existing stats logic.
-- Week start = Monday (ISO 8601), formatted as `"YYYY-MM-DD"`.
+- **Always:** use the same filtered item set already passed to `computeStats` — no extra fetch, no new endpoint.
+- **Never:** alter the existing aggregate `timeToClosePercentiles` field or its display.
+- **Out of scope:** charts, CSV export, pagination of the monthly table.
