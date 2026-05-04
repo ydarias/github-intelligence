@@ -26,6 +26,7 @@ export function AgingWipTable({ items }: Props) {
               <th className="pb-2 pr-4 font-medium">Repo</th>
               <th className="pb-2 pr-4 font-medium">Type</th>
               <th className="pb-2 pr-4 font-medium text-right">Age (days)</th>
+              <th className="pb-2 pr-4 font-medium">Author</th>
               <th className="pb-2 font-medium">Assignees</th>
             </tr>
           </thead>
@@ -50,6 +51,7 @@ export function AgingWipTable({ items }: Props) {
                 <td className={`py-2 pr-4 text-right font-mono font-semibold ${ageColor(item.ageDays)}`}>
                   {item.ageDays}
                 </td>
+                <td className="py-2 pr-4 text-muted text-xs">{item.author}</td>
                 <td className="py-2 text-muted text-xs">
                   {item.assignees.length > 0 ? item.assignees.join(", ") : "—"}
                 </td>
