@@ -18,7 +18,7 @@ export function ReportView({ repositories }: Props) {
           <h2 className="text-sm font-semibold tracking-widest uppercase text-text mb-4">
             {repo.repository}
           </h2>
-          <IssuesOverTimeChart byDay={repo.byDay} />
+          <IssuesOverTimeChart byDay={repo.byDay} aggregation="last" />
         </section>
       ))}
     </div>

@@ -63,16 +63,24 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   );
 }
 
+function toMs(dateStr: string): number {
+  return new Date(dateStr).getTime();
+}
+
+function formatDate(ms: number): string {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
 export function CycleTimeScatterPlot({ items }: Props) {
   if (items.length === 0) return null;
 
   const issueData = items
     .filter((i) => i.type === "issue")
-    .map((i) => ({ closeDate: i.closeDate, cycleDays: i.cycleDays, title: i.title, url: i.url }));
+    .map((i) => ({ x: toMs(i.closeDate), closeDate: i.closeDate, cycleDays: i.cycleDays, title: i.title, url: i.url }));
 
   const prData = items
     .filter((i) => i.type === "pr")
-    .map((i) => ({ closeDate: i.closeDate, cycleDays: i.cycleDays, title: i.title, url: i.url }));
+    .map((i) => ({ x: toMs(i.closeDate), closeDate: i.closeDate, cycleDays: i.cycleDays, title: i.title, url: i.url }));
 
   return (
     <div className="rounded-xl border border-border bg-panel p-5 mb-6">
@@ -81,9 +89,11 @@ export function CycleTimeScatterPlot({ items }: Props) {
         <ScatterChart>
           <CartesianGrid stroke="oklch(0.28 0 0)" strokeDasharray="0" />
           <XAxis
-            dataKey="closeDate"
-            type="category"
+            dataKey="x"
+            type="number"
+            domain={["dataMin", "dataMax"]}
             name="Close date"
+            tickFormatter={formatDate}
             tick={{ fontSize: 11, fill: "oklch(0.55 0 0)" }}
             axisLine={false}
             tickLine={false}
