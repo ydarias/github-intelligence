@@ -15,7 +15,7 @@ GitHub Intelligence is a monorepo that lets you pull issues and PRs from any Git
 ## Features
 
 - Fetch issues and pull requests for any public or private GitHub repository
-- Filter by date range
+- Fetch members of an organization
 - Cache results locally — repeat queries are instant, no API calls made
 - Interactive web dashboard with:
   - Summary stats (total, open, closed)
@@ -47,28 +47,40 @@ GitHub Intelligence is a monorepo that lets you pull issues and PRs from any Git
 
 ```bash
 git clone https://github.com/your-org/github-intelligence.git
+
 cd github-intelligence
+
 npm install
+
 npm run build
 ```
 
 ### Collect issues and PRs
 
+Note: if you are going to use an Enterprise Github instance remember to give a value to the `GITHUB_BASE_URL` environment variable, e.g. `export GITHUB_BASE_URL=https://github.your-org.com/api/v3`.
+
 ```bash
 export GITHUB_TOKEN=ghp_your_token_here
 
-# Collect the last month of activity
-node apps/cli-runner/dist/index.js --repo facebook/react
+# Collect the last month of issues
+node apps/cli-runner/dist/index.js issues --repo facebook/react
 
 # Or specify a date range
-node apps/cli-runner/dist/index.js --repo facebook/react --from 2024-01-01 --to 2024-03-31
+node apps/cli-runner/dist/index.js issue --repo facebook/react --from 2024-01-01 --to 2024-03-31
+
+# Or collect the last month of PRs
+node apps/cli-runner/dist/index.js prs --repo facebook/react
+
+# Or collect the members of a given organization
+node apps/cli-runner/dist/index.js members --org facebook
 ```
 
 ### Open the dashboard
 
 ```bash
-cd apps/reporter
-GITHUB_TOKEN=ghp_your_token_here npm run dev
+export GITHUB_TOKEN=ghp_your_token_here 
+
+npm run dev
 ```
 
 Then visit [http://localhost:5173](http://localhost:5173).
@@ -81,18 +93,20 @@ github-intelligence/
 │   ├── cli-runner/        # CLI — collects and prints issues/PRs
 │   └── reporter/          # Web dashboard — Express API + React SPA
 └── packages/
-    ├── issues-collector/  # Core library — GitHub API + local cache
+    ├── github-client/     # Core library — GitHub API + client interface
+    ├── issues-collector/  # Issues and PRs collector and repository
+    ├── members-collector/ # Members collector and repository
     └── tsconfig/          # Shared TypeScript configuration
 ```
 
 ## Environment variables
 
-| Variable          | Used by       | Description                                         |
-| ----------------- | ------------- | --------------------------------------------------- |
-| `GITHUB_TOKEN`    | CLI, Reporter | GitHub personal access token                        |
-| `GITHUB_BASE_URL` | CLI           | GitHub API base URL (GitHub Enterprise)             |
-| `CACHE_FOLDER`    | CLI, Reporter | Local cache directory (default: `.cache/`)          |
-| `PORT`            | Reporter      | HTTP port for the reporter server (default: `3001`) |
+| Variable          | Used by       | Description                                                      |
+| ----------------- | ------------- |------------------------------------------------------------------|
+| `GITHUB_TOKEN`    | CLI, Reporter | GitHub personal access token                                     |
+| `GITHUB_BASE_URL` | CLI           | GitHub API base URL (GitHub Enterprise)                          |
+| `CACHE_FOLDER`    | CLI, Reporter | Local cache directory (default: `/tmp/.cache/issues-collector`)  |
+| `PORT`            | Reporter      | HTTP port for the reporter server (default: `3001`)              |
 
 Both apps load `.env` files automatically via `dotenv`.
 
