@@ -16,7 +16,7 @@ export function ReportView({ repositories, quickClose }: Props) {
   return (
     <div className="space-y-10">
       <section>
-        <QuickCloseChart byDay={quickClose?.byDay ?? []} />
+        <QuickCloseChart byDay={quickClose?.byDay ?? []} items={quickClose?.items ?? []} />
       </section>
       {repositories.map((repo) => (
         <section key={repo.repository}>

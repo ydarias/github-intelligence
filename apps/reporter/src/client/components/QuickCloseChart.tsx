@@ -9,10 +9,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import type { QuickCloseItem } from "../types.js";
+
 type Granularity = "day" | "week" | "month";
 
 interface Props {
   byDay: Array<{ date: string; count: number }>;
+  items: QuickCloseItem[];
 }
 
 function getWeekStart(dateStr: string): string {
@@ -45,8 +48,9 @@ const GRANULARITIES: { label: string; value: Granularity }[] = [
   { label: "Month", value: "month" },
 ];
 
-export function QuickCloseChart({ byDay }: Props) {
+export function QuickCloseChart({ byDay, items }: Props) {
   const [granularity, setGranularity] = useState<Granularity>("day");
+  const [showList, setShowList] = useState(false);
 
   if (byDay.length === 0) return null;
 
@@ -107,6 +111,49 @@ export function QuickCloseChart({ byDay }: Props) {
           />
         </LineChart>
       </ResponsiveContainer>
+
+      <div className="mt-4 border-t border-border pt-3">
+        <button
+          onClick={() => setShowList((v) => !v)}
+          className="text-xs text-muted hover:text-text transition-colors"
+        >
+          {showList ? "Hide issues" : `Show ${items.length} issue${items.length === 1 ? "" : "s"}`}
+        </button>
+
+        {showList && (
+          <table className="mt-3 w-full text-sm">
+            <thead>
+              <tr className="text-left">
+                <th className="pb-2 pr-4 text-xs font-medium uppercase tracking-widest text-muted whitespace-nowrap">
+                  Issue
+                </th>
+                <th className="pb-2 text-xs font-medium uppercase tracking-widest text-muted">
+                  Title
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id} className="border-t border-border">
+                  <td className="py-2 pr-4 text-xs font-mono text-muted whitespace-nowrap">
+                    {item.repository}#{item.number}
+                  </td>
+                  <td className="py-2">
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-text hover:text-accent transition-colors"
+                    >
+                      {item.title}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

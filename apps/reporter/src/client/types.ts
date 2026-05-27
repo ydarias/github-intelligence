@@ -94,8 +94,17 @@ export interface CycleTimeResponse {
   items: CycleTimeItem[];
 }
 
+export interface QuickCloseItem {
+  id: number;
+  number: number;
+  repository: string;
+  title: string;
+  url: string;
+}
+
 export interface QuickCloseResponse {
   byDay: Array<{ date: string; count: number }>;
+  items: QuickCloseItem[];
 }
 
 export interface OrgMember {
