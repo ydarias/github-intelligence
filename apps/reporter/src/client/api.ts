@@ -3,6 +3,7 @@ import type {
   CycleTimeResponse,
   IssuesResponse,
   OrgMember,
+  QuickCloseResponse,
   ReportResponse,
   ThroughputResponse,
 } from "./types.js";
@@ -70,4 +71,15 @@ export async function fetchCycleTime(): Promise<CycleTimeResponse> {
   }
 
   return response.json() as Promise<CycleTimeResponse>;
+}
+
+export async function fetchQuickClose(): Promise<QuickCloseResponse> {
+  const response = await fetch("/api/quick-close");
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error((err as { error?: string }).error ?? "Request failed");
+  }
+
+  return response.json() as Promise<QuickCloseResponse>;
 }

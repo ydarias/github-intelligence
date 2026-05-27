@@ -94,6 +94,10 @@ export interface CycleTimeResponse {
   items: CycleTimeItem[];
 }
 
+export interface QuickCloseResponse {
+  byDay: Array<{ date: string; count: number }>;
+}
+
 export interface OrgMember {
   id: number;
   login: string;

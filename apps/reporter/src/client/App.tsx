@@ -6,6 +6,7 @@ import {
   fetchCycleTime,
   fetchIssues,
   fetchMembers,
+  fetchQuickClose,
   fetchReport,
   fetchThroughput,
 } from "./api.js";
@@ -28,6 +29,7 @@ import type {
   MonthlyTimeToClose,
   TimeToClosePercentiles,
   OrgMember,
+  QuickCloseResponse,
   ReportResponse,
   ThroughputResponse,
 } from "./types.js";
@@ -149,6 +151,7 @@ export function App() {
   const [data, setData] = useState<IssuesResponse | null>(null);
   const [members, setMembers] = useState<OrgMember[]>([]);
   const [report, setReport] = useState<ReportResponse | null>(null);
+  const [quickClose, setQuickClose] = useState<QuickCloseResponse | null>(null);
   const [reportStatus, setReportStatus] = useState<Status>("loading");
   const [reportError, setReportError] = useState<string | null>(null);
   const [agingWip, setAgingWip] = useState<AgingWipItem[]>([]);
@@ -184,9 +187,10 @@ export function App() {
     fetchMembers()
       .then(setMembers)
       .catch(() => {});
-    fetchReport()
-      .then((result) => {
-        setReport(result);
+    Promise.all([fetchReport(), fetchQuickClose()])
+      .then(([reportResult, quickCloseResult]) => {
+        setReport(reportResult);
+        setQuickClose(quickCloseResult);
         setReportStatus("success");
       })
       .catch((e: unknown) => {
@@ -313,7 +317,7 @@ export function App() {
             )}
             {reportStatus === "error" && <p className="text-red-400 text-sm">{reportError}</p>}
             {reportStatus === "success" && report !== null && (
-              <ReportView repositories={report.repositories} />
+              <ReportView repositories={report.repositories} quickClose={quickClose} />
             )}
           </>
         )}
