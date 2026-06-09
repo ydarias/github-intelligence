@@ -28,6 +28,15 @@ export interface MonthlyTimeToClose {
   p99: number;
 }
 
+export interface IssueOriginEntry {
+  login: string;
+  name: string | null;
+  total: number;
+  open: number;
+  closed: number;
+  percentage: number;
+}
+
 export interface IssueStats {
   total: number;
   open: number;
@@ -39,6 +48,7 @@ export interface IssueStats {
   avgPRsPerDay: number;
   timeToClosePercentiles: TimeToClosePercentiles | null;
   timeToCloseByMonth: MonthlyTimeToClose[];
+  byAuthor: IssueOriginEntry[];
   byDay: Array<{ date: string; issues: number; prs: number }>;
 }
 

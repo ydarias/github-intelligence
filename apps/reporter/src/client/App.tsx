@@ -12,6 +12,7 @@ import {
 } from "./api.js";
 import { AgingWipTable } from "./components/AgingWipTable.js";
 import { CycleTimeScatterPlot } from "./components/CycleTimeScatterPlot.js";
+import { IssueOriginsTable } from "./components/IssueOriginsTable.js";
 import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
 import { MembersTable } from "./components/MembersTable.js";
@@ -33,6 +34,7 @@ import type {
   ReportResponse,
   ThroughputResponse,
 } from "./types.js";
+import { computeIssueOrigins } from "./compute-issue-origins.js";
 
 function nearestRankPercentile(sorted: number[], p: number): number {
   const rank = Math.ceil((p / 100) * sorted.length);
@@ -76,6 +78,7 @@ function computeTimeToCloseByMonth(items: GitHubIssueDTO[]): MonthlyTimeToClose[
 function computeFilteredStats(
   items: GitHubIssueDTO[],
   byDayFromServer: IssueStats["byDay"],
+  members: OrgMember[],
 ): IssueStats {
   const issues = items.filter((i) => i.type === "issue");
   const prs = items.filter((i) => i.type === "pr");
@@ -135,6 +138,7 @@ function computeFilteredStats(
     avgPRsPerDay,
     timeToClosePercentiles,
     timeToCloseByMonth: computeTimeToCloseByMonth(items),
+    byAuthor: computeIssueOrigins(items, members),
     byDay,
   };
 }
@@ -243,7 +247,7 @@ export function App() {
       })
     : [];
 
-  const filteredStats = data ? computeFilteredStats(filteredIssues, data.stats.byDay) : null;
+  const filteredStats = data ? computeFilteredStats(filteredIssues, data.stats.byDay, members) : null;
 
   const pagedIssues = filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const totalPages = Math.ceil(filteredIssues.length / PAGE_SIZE);
@@ -345,6 +349,8 @@ export function App() {
             </div>
 
             <IssuesOverTimeChart byDay={filteredStats!.byDay} />
+
+            <IssueOriginsTable entries={filteredStats!.byAuthor} />
 
             {/* Floating toggle button */}
             <button
