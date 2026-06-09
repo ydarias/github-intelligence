@@ -1,0 +1,12 @@
+{
+  "extends": "@github-intelligence/tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "noEmit": true
+  },
+  "include": [
+    "src/client/types.ts",
+    "src/client/compute-issue-origins.ts",
+    "src/client/compute-issue-origins.spec.ts"
+  ]
+}
