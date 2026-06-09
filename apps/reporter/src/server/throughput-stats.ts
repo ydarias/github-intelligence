@@ -1,9 +1,18 @@
 import type { GithubIssue } from "@github-intelligence/issues-collector";
 
+export interface ThroughputItem {
+  id: number;
+  title: string;
+  url: string;
+  repository: string;
+  type: "issue" | "pr";
+}
+
 export interface WeeklyThroughput {
   week: string;
   issues: number;
   prs: number;
+  items: ThroughputItem[];
 }
 
 export interface ThroughputResponse {
@@ -19,26 +28,26 @@ function toWeekStart(dateStr: string): string {
 }
 
 export function computeThroughput(items: GithubIssue[]): ThroughputResponse {
-  const issuesByWeek = new Map<string, number>();
-  const prsByWeek = new Map<string, number>();
+  const byWeekMap = new Map<string, ThroughputItem[]>();
 
   for (const item of items) {
     if (item.closedAt === null) continue;
     const week = toWeekStart(item.closedAt);
-    if (item.type === "pr") {
-      prsByWeek.set(week, (prsByWeek.get(week) ?? 0) + 1);
-    } else {
-      issuesByWeek.set(week, (issuesByWeek.get(week) ?? 0) + 1);
-    }
+    const weekItems = byWeekMap.get(week) ?? [];
+    weekItems.push({ id: item.id, title: item.title, url: item.url, repository: item.repository, type: item.type });
+    byWeekMap.set(week, weekItems);
   }
 
-  const allWeeks = new Set([...issuesByWeek.keys(), ...prsByWeek.keys()]);
-  const byWeek = Array.from(allWeeks)
-    .map((week) => ({
-      week,
-      issues: issuesByWeek.get(week) ?? 0,
-      prs: prsByWeek.get(week) ?? 0,
-    }))
+  const byWeek = Array.from(byWeekMap.entries())
+    .map(([week, weekItems]) => {
+      const sortedItems = [...weekItems].sort((a, b) => a.type.localeCompare(b.type));
+      return {
+        week,
+        issues: weekItems.filter((i) => i.type === "issue").length,
+        prs: weekItems.filter((i) => i.type === "pr").length,
+        items: sortedItems,
+      };
+    })
     .sort((a, b) => a.week.localeCompare(b.week));
 
   return { byWeek };

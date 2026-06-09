@@ -70,10 +70,19 @@ export interface AgingWipItem {
   labels: string[];
 }
 
+export interface ThroughputItem {
+  id: number;
+  title: string;
+  url: string;
+  repository: string;
+  type: "issue" | "pr";
+}
+
 export interface WeeklyThroughput {
   week: string;
   issues: number;
   prs: number;
+  items: ThroughputItem[];
 }
 
 export interface ThroughputResponse {
