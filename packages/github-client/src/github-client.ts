@@ -1,3 +1,4 @@
+import { throttling } from "@octokit/plugin-throttling";
 import { Octokit } from "@octokit/rest";
 
 import { issueMapper } from "./mappers/issue-mapper.js";
@@ -11,13 +12,30 @@ import type { OrgMember } from "./types/org-member.js";
 import type { SearchProgressListener } from "./types/search-progress-listener.js";
 
 export class GitHubClient {
+  private static readonly MAX_RATE_LIMIT_RETRIES = 3;
+
   private readonly octokit: Octokit;
 
   constructor(token?: string, baseUrl = "https://api.github.com") {
-    this.octokit = new Octokit({
+    const ThrottledOctokit = Octokit.plugin(throttling);
+    this.octokit = new ThrottledOctokit({
       auth: token ?? process.env["GITHUB_TOKEN"],
       baseUrl,
+      throttle: {
+        onRateLimit: GitHubClient.shouldRetryAfterRateLimit,
+        onSecondaryRateLimit: GitHubClient.shouldRetryAfterRateLimit,
+      },
     });
+  }
+
+  // Returning true tells the throttling plugin to wait retryAfter seconds and retry.
+  private static shouldRetryAfterRateLimit(
+    _retryAfter: number,
+    _options: unknown,
+    _octokit: unknown,
+    retryCount: number,
+  ): boolean {
+    return retryCount < GitHubClient.MAX_RATE_LIMIT_RETRIES;
   }
 
   async listIssues(
