@@ -2,9 +2,13 @@ import { Octokit } from "@octokit/rest";
 
 import { issueMapper } from "./mappers/issue-mapper.js";
 import { memberMapper } from "./mappers/member-mapper.js";
+import { DateWindow } from "./search/date-window.js";
+import { OctokitSearchPort } from "./search/octokit-search-port.js";
+import { SearchWindowFetcher } from "./search/search-window-fetcher.js";
 import type { GithubElementType } from "./types/github-element-type.js";
 import type { GithubIssue } from "./types/github-issue.js";
 import type { OrgMember } from "./types/org-member.js";
+import type { SearchProgressListener } from "./types/search-progress-listener.js";
 
 export class GitHubClient {
   private readonly octokit: Octokit;
@@ -16,12 +20,24 @@ export class GitHubClient {
     });
   }
 
-  async listIssues(owner: string, repo: string, from: Date, to: Date): Promise<GithubIssue[]> {
-    return this.searchItems(owner, repo, "issue", from, to);
+  async listIssues(
+    owner: string,
+    repo: string,
+    from: Date,
+    to: Date,
+    listener?: SearchProgressListener,
+  ): Promise<GithubIssue[]> {
+    return this.searchItems(owner, repo, "issue", from, to, listener);
   }
 
-  async listPRs(owner: string, repo: string, from: Date, to: Date): Promise<GithubIssue[]> {
-    return this.searchItems(owner, repo, "pr", from, to);
+  async listPRs(
+    owner: string,
+    repo: string,
+    from: Date,
+    to: Date,
+    listener?: SearchProgressListener,
+  ): Promise<GithubIssue[]> {
+    return this.searchItems(owner, repo, "pr", from, to, listener);
   }
 
   async listOrgMembers(org: string): Promise<OrgMember[]> {
@@ -46,15 +62,11 @@ export class GitHubClient {
     itemType: GithubElementType,
     from: Date,
     to: Date,
+    listener?: SearchProgressListener,
   ): Promise<GithubIssue[]> {
-    const fromStr = from.toISOString().split("T")[0];
-    const toStr = to.toISOString().split("T")[0];
-    const q = `repo:${owner}/${repo} is:${itemType} created:${fromStr}..${toStr}`;
-
-    const items = await this.octokit.paginate(this.octokit.rest.search.issuesAndPullRequests, {
-      q,
-      per_page: 100,
-    });
+    const port = new OctokitSearchPort(this.octokit, `repo:${owner}/${repo} is:${itemType}`);
+    const fetcher = new SearchWindowFetcher(port, listener);
+    const items = await fetcher.fetch(DateWindow.fromDates(from, to));
 
     return items.map((item) => issueMapper.toGitHubIssue(item, repo, itemType));
   }
