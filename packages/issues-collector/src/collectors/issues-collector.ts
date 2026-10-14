@@ -10,8 +10,8 @@ export class IssuesCollector {
   ) {}
 
   async collect(options: FetchIssuesOptions): Promise<GithubIssue[]> {
-    const { owner, repo, from, to } = options;
-    const issues = await this.client.listIssues(owner, repo, from, to);
+    const { owner, repo, from, to, listener } = options;
+    const issues = await this.client.listIssues(owner, repo, from, to, listener);
     this.repository.saveAll(issues);
     return issues;
   }

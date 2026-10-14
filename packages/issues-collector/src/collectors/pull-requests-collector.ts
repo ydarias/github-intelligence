@@ -10,8 +10,8 @@ export class PullRequestsCollector {
   ) {}
 
   async collect(options: FetchIssuesOptions): Promise<GithubIssue[]> {
-    const { owner, repo, from, to } = options;
-    const prs = await this.client.listPRs(owner, repo, from, to);
+    const { owner, repo, from, to, listener } = options;
+    const prs = await this.client.listPRs(owner, repo, from, to, listener);
     this.repository.saveAll(prs);
     return prs;
   }
