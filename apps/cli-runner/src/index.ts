@@ -13,6 +13,7 @@ import {
 import { Command } from "commander";
 import { subMonths } from "date-fns";
 
+import { ConsoleProgressListener } from "./console-progress-listener.js";
 import { Printer } from "./printer.js";
 
 const program = new Command();
@@ -33,7 +34,8 @@ program
     const client = new GitHubClient(process.env["GITHUB_TOKEN"], process.env["GITHUB_BASE_URL"]);
     const repository = new FlatCacheIssuesRepository(process.env["CACHE_FOLDER"]);
     const collector = new IssuesCollector(client, repository);
-    const issues = await collector.collect({ owner, repo, from, to });
+    const listener = new ConsoleProgressListener();
+    const issues = await collector.collect({ owner, repo, from, to, listener });
     Printer.printIssuesTable(issues);
   });
 
@@ -53,7 +55,8 @@ program
     const client = new GitHubClient(process.env["GITHUB_TOKEN"], process.env["GITHUB_BASE_URL"]);
     const repository = new FlatCachePullRequestsRepository(process.env["CACHE_FOLDER"]);
     const collector = new PullRequestsCollector(client, repository);
-    const prs = await collector.collect({ owner, repo, from, to });
+    const listener = new ConsoleProgressListener();
+    const prs = await collector.collect({ owner, repo, from, to, listener });
     Printer.printIssuesTable(prs);
   });
 

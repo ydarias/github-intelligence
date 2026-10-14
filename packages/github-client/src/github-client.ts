@@ -1,27 +1,61 @@
+import { throttling } from "@octokit/plugin-throttling";
 import { Octokit } from "@octokit/rest";
 
 import { issueMapper } from "./mappers/issue-mapper.js";
 import { memberMapper } from "./mappers/member-mapper.js";
+import { DateWindow } from "./search/date-window.js";
+import { OctokitSearchPort } from "./search/octokit-search-port.js";
+import { SearchWindowFetcher } from "./search/search-window-fetcher.js";
 import type { GithubElementType } from "./types/github-element-type.js";
 import type { GithubIssue } from "./types/github-issue.js";
 import type { OrgMember } from "./types/org-member.js";
+import type { SearchProgressListener } from "./types/search-progress-listener.js";
 
 export class GitHubClient {
+  private static readonly MAX_RATE_LIMIT_RETRIES = 3;
+
   private readonly octokit: Octokit;
 
   constructor(token?: string, baseUrl = "https://api.github.com") {
-    this.octokit = new Octokit({
+    const ThrottledOctokit = Octokit.plugin(throttling);
+    this.octokit = new ThrottledOctokit({
       auth: token ?? process.env["GITHUB_TOKEN"],
       baseUrl,
+      throttle: {
+        onRateLimit: GitHubClient.shouldRetryAfterRateLimit,
+        onSecondaryRateLimit: GitHubClient.shouldRetryAfterRateLimit,
+      },
     });
   }
 
-  async listIssues(owner: string, repo: string, from: Date, to: Date): Promise<GithubIssue[]> {
-    return this.searchItems(owner, repo, "issue", from, to);
+  // Returning true tells the throttling plugin to wait retryAfter seconds and retry.
+  private static shouldRetryAfterRateLimit(
+    _retryAfter: number,
+    _options: unknown,
+    _octokit: unknown,
+    retryCount: number,
+  ): boolean {
+    return retryCount < GitHubClient.MAX_RATE_LIMIT_RETRIES;
   }
 
-  async listPRs(owner: string, repo: string, from: Date, to: Date): Promise<GithubIssue[]> {
-    return this.searchItems(owner, repo, "pr", from, to);
+  async listIssues(
+    owner: string,
+    repo: string,
+    from: Date,
+    to: Date,
+    listener?: SearchProgressListener,
+  ): Promise<GithubIssue[]> {
+    return this.searchItems(owner, repo, "issue", from, to, listener);
+  }
+
+  async listPRs(
+    owner: string,
+    repo: string,
+    from: Date,
+    to: Date,
+    listener?: SearchProgressListener,
+  ): Promise<GithubIssue[]> {
+    return this.searchItems(owner, repo, "pr", from, to, listener);
   }
 
   async listOrgMembers(org: string): Promise<OrgMember[]> {
@@ -46,15 +80,11 @@ export class GitHubClient {
     itemType: GithubElementType,
     from: Date,
     to: Date,
+    listener?: SearchProgressListener,
   ): Promise<GithubIssue[]> {
-    const fromStr = from.toISOString().split("T")[0];
-    const toStr = to.toISOString().split("T")[0];
-    const q = `repo:${owner}/${repo} is:${itemType} created:${fromStr}..${toStr}`;
-
-    const items = await this.octokit.paginate(this.octokit.rest.search.issuesAndPullRequests, {
-      q,
-      per_page: 100,
-    });
+    const port = new OctokitSearchPort(this.octokit, `repo:${owner}/${repo} is:${itemType}`);
+    const fetcher = new SearchWindowFetcher(port, listener);
+    const items = await fetcher.fetch(DateWindow.fromDates(from, to));
 
     return items.map((item) => issueMapper.toGitHubIssue(item, repo, itemType));
   }

@@ -8,5 +8,9 @@ export {
   FlatCachePullRequestsRepository,
   type PullRequestsRepository,
 } from "./repositories/pull-requests-repository.js";
-export type { GithubIssue } from "@github-intelligence/github-client";
+export type {
+  DateWindow,
+  GithubIssue,
+  SearchProgressListener,
+} from "@github-intelligence/github-client";
 export { FetchIssuesOptions } from "./types/fetchIssuesOptions.js";
