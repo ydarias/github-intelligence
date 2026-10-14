@@ -21,6 +21,7 @@ import { SearchForm, DEFAULT_FILTERS } from "./components/SearchForm.js";
 import type { SearchFilters } from "./components/SearchForm.js";
 import { StatsSummary } from "./components/StatsSummary.js";
 import { ThroughputChart } from "./components/ThroughputChart.js";
+import { computeIssueOrigins } from "./compute-issue-origins.js";
 import type {
   AgingWipItem,
   CycleTimeResponse,
@@ -34,7 +35,6 @@ import type {
   ReportResponse,
   ThroughputResponse,
 } from "./types.js";
-import { computeIssueOrigins } from "./compute-issue-origins.js";
 
 function nearestRankPercentile(sorted: number[], p: number): number {
   const rank = Math.ceil((p / 100) * sorted.length);
@@ -247,7 +247,9 @@ export function App() {
       })
     : [];
 
-  const filteredStats = data ? computeFilteredStats(filteredIssues, data.stats.byDay, members) : null;
+  const filteredStats = data
+    ? computeFilteredStats(filteredIssues, data.stats.byDay, members)
+    : null;
 
   const pagedIssues = filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const totalPages = Math.ceil(filteredIssues.length / PAGE_SIZE);

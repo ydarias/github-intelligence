@@ -1,8 +1,9 @@
+import { computeIssueOrigins } from "./compute-issue-origins.js";
 import type { GitHubIssueDTO, OrgMember } from "./types.js";
 
-import { computeIssueOrigins } from "./compute-issue-origins.js";
-
-function makeItem(overrides: Partial<GitHubIssueDTO> & { id: number; author: string }): GitHubIssueDTO {
+function makeItem(
+  overrides: Partial<GitHubIssueDTO> & { id: number; author: string },
+): GitHubIssueDTO {
   return {
     id: overrides.id,
     number: overrides.id,
@@ -20,7 +21,15 @@ function makeItem(overrides: Partial<GitHubIssueDTO> & { id: number; author: str
 }
 
 function makeMember(login: string, name: string | null = null): OrgMember {
-  return { id: 1, login, name, email: null, createdAt: "2024-01-01T00:00:00Z", talentId: null, jobRole: null };
+  return {
+    id: 1,
+    login,
+    name,
+    email: null,
+    createdAt: "2024-01-01T00:00:00Z",
+    talentId: null,
+    jobRole: null,
+  };
 }
 
 describe("computeIssueOrigins", () => {
@@ -32,13 +41,29 @@ describe("computeIssueOrigins", () => {
     const items = [makeItem({ id: 1, author: "alice", state: "open" })];
     const result = computeIssueOrigins(items, []);
     expect(result).toHaveLength(1);
-    expect(result[0]).toEqual({ login: "alice", name: null, total: 1, open: 1, closed: 0, percentage: 100 });
+    expect(result[0]).toEqual({
+      login: "alice",
+      name: null,
+      total: 1,
+      open: 1,
+      closed: 0,
+      percentage: 100,
+    });
   });
 
   it("returns one entry for a single closed item", () => {
-    const items = [makeItem({ id: 1, author: "alice", state: "closed", closedAt: "2024-01-02T00:00:00Z" })];
+    const items = [
+      makeItem({ id: 1, author: "alice", state: "closed", closedAt: "2024-01-02T00:00:00Z" }),
+    ];
     const result = computeIssueOrigins(items, []);
-    expect(result[0]).toEqual({ login: "alice", name: null, total: 1, open: 0, closed: 1, percentage: 100 });
+    expect(result[0]).toEqual({
+      login: "alice",
+      name: null,
+      total: 1,
+      open: 0,
+      closed: 1,
+      percentage: 100,
+    });
   });
 
   it("returns two entries sorted by total descending", () => {
