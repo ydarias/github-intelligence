@@ -2,6 +2,7 @@
 
 > Collect GitHub issues and pull requests, explore them in your browser.
 
+[![CI](https://github.com/ydarias/github-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/ydarias/github-intelligence/actions/workflows/ci.yml)
 ![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
