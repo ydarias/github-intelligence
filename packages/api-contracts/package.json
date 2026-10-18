@@ -1,0 +1,31 @@
+{
+  "name": "@github-intelligence/api-contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "type-check": "tsc --noEmit",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest --config jest.config.cjs",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@github-intelligence/github-client": "*",
+    "@github-intelligence/tsconfig": "*",
+    "@types/node": "22.19.17",
+    "typescript": "5.7.3"
+  }
+}
