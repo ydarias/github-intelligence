@@ -1,1 +1,2 @@
+npm run format:check
 npx turbo run lint type-check test
