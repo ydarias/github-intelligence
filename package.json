@@ -17,22 +17,27 @@
     "clean": "turbo clean"
   },
   "devDependencies": {
-    "@types/jest": "29.5.14",
+    "@types/jest": "30.0.0",
     "eslint": "9.39.4",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
     "eslint-plugin-import-x": "4.16.2",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
-    "jest": "29.7.0",
+    "jest": "30.5.2",
     "prettier": "3.8.3",
-    "ts-jest": "29.2.5",
-    "turbo": "2.3.3",
+    "ts-jest": "29.4.15",
+    "turbo": "2.11.9",
     "typescript": "5.7.3",
     "typescript-eslint": "8.59.1"
   },
   "packageManager": "npm@10.9.2",
   "engines": {
     "node": ">=20"
+  },
+  "overrides": {
+    "@istanbuljs/load-nyc-config": {
+      "js-yaml": "4.3.2"
+    }
   }
 }

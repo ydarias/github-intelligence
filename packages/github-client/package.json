@@ -16,7 +16,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest --config jest.config.cjs",
     "clean": "rm -rf dist"
   },
   "dependencies": {

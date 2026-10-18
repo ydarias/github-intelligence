@@ -13,7 +13,7 @@
     "build:client": "vite build",
     "type-check": "tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.client.json --noEmit",
     "start": "node dist/server/index.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest --config jest.config.cjs",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -44,9 +44,9 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.1",
-    "concurrently": "9.2.1",
-    "tsx": "4.21.0",
+    "concurrently": "9.2.5",
+    "tsx": "4.23.15",
     "typescript": "5.7.3",
-    "vite": "8.0.8"
+    "vite": "8.3.4"
   }
 }
