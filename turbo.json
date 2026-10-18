@@ -7,7 +7,8 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": ["CACHE_FOLDER", "PORT", "GITHUB_TOKEN", "GITHUB_BASE_URL"]
     },
     "lint": {
       "dependsOn": ["^build"]

@@ -49,7 +49,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["apps/reporter/src/**/*.ts", "apps/reporter/src/**/*.tsx"],
+    files: ["apps/ui/src/**/*.ts", "apps/ui/src/**/*.tsx"],
     plugins: {
       react: reactPlugin,
       "react-hooks": reactHooksPlugin,
