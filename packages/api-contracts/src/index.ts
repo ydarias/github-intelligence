@@ -52,3 +52,5 @@ export {
 } from "./schemas/issues-response.schema.js";
 export type { IssueFilterOptions } from "./types/issue-filter-options.js";
 export type { IssuesResponse } from "./types/issues-response.js";
+export { issuesQuerySchema } from "./schemas/issues-query.schema.js";
+export type { IssuesQuery } from "./types/issues-query.js";
