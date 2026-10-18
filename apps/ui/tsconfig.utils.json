@@ -4,5 +4,5 @@
     "rootDir": "src",
     "noEmit": true
   },
-  "include": ["src/compute-issue-origins.ts", "src/compute-issue-origins.spec.ts"]
+  "include": ["src/issues-query-builder.ts", "src/default-filters.ts", "src/types/search-filters.ts", "src/issues-query-builder.spec.ts"]
 }

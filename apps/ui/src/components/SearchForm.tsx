@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+import { DEFAULT_FILTERS } from "../default-filters.js";
+import type { SearchFilters } from "../types/search-filters.js";
+
 import { LabelPicker } from "./LabelPicker.js";
 import { Button } from "./ui/button.js";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
@@ -7,26 +10,6 @@ import { Checkbox } from "./ui/checkbox.js";
 import { Input } from "./ui/input.js";
 import { Label } from "./ui/label.js";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select.js";
-
-export interface SearchFilters {
-  type: "all" | "issue" | "pr";
-  title: string;
-  state: "all" | "open" | "closed";
-  author: string;
-  assignee: string;
-  labels: string[];
-  oneDayOnly: boolean;
-}
-
-export const DEFAULT_FILTERS: SearchFilters = {
-  type: "all",
-  title: "",
-  state: "all",
-  author: "",
-  assignee: "",
-  labels: [],
-  oneDayOnly: false,
-};
 
 interface Props {
   authors: string[];

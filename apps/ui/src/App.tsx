@@ -2,10 +2,6 @@ import type {
   AgingWipItem,
   CycleTimeResponse,
   IssuesResponse,
-  IssueStats,
-  GithubIssue,
-  MonthlyTimeToClose,
-  TimeToClosePercentiles,
   OrgMember,
   QuickCloseResponse,
   ReportResponse,
@@ -30,117 +26,11 @@ import { IssuesOverTimeChart } from "./components/IssuesOverTimeChart.js";
 import { IssueTable } from "./components/IssueTable.js";
 import { MembersTable } from "./components/MembersTable.js";
 import { ReportView } from "./components/ReportView.js";
-import { SearchForm, DEFAULT_FILTERS, type SearchFilters } from "./components/SearchForm.js";
+import { SearchForm } from "./components/SearchForm.js";
 import { StatsSummary } from "./components/StatsSummary.js";
 import { ThroughputChart } from "./components/ThroughputChart.js";
-import { computeIssueOrigins } from "./compute-issue-origins.js";
-
-function nearestRankPercentile(sorted: number[], p: number): number {
-  const rank = Math.ceil((p / 100) * sorted.length);
-  return sorted[rank - 1] ?? 0;
-}
-
-function calendarDaysInRange(dates: string[]): number {
-  if (dates.length === 0) return 1;
-  const min = dates.reduce((a, b) => (a < b ? a : b));
-  const max = dates.reduce((a, b) => (a > b ? a : b));
-  return (
-    Math.round((new Date(max).getTime() - new Date(min).getTime()) / (1000 * 60 * 60 * 24)) + 1
-  );
-}
-
-function computeTimeToCloseByMonth(items: GithubIssue[]): MonthlyTimeToClose[] {
-  const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
-  const byMonth = new Map<string, number[]>();
-  for (const item of closedItems) {
-    const month = item.closedAt!.slice(0, 7);
-    const hours =
-      (new Date(item.closedAt!).getTime() - new Date(item.createdAt).getTime()) / (1000 * 60 * 60);
-    const bucket = byMonth.get(month) ?? [];
-    bucket.push(hours);
-    byMonth.set(month, bucket);
-  }
-  return Array.from(byMonth.entries())
-    .map(([month, hours]) => {
-      const sorted = [...hours].sort((a, b) => a - b);
-      return {
-        month,
-        p50: nearestRankPercentile(sorted, 50),
-        p75: nearestRankPercentile(sorted, 75),
-        p90: nearestRankPercentile(sorted, 90),
-        p99: nearestRankPercentile(sorted, 99),
-      };
-    })
-    .sort((a, b) => b.month.localeCompare(a.month));
-}
-
-function computeFilteredStats(
-  items: GithubIssue[],
-  byDayFromServer: IssueStats["byDay"],
-  members: OrgMember[],
-): IssueStats {
-  const issues = items.filter((i) => i.type === "issue");
-  const prs = items.filter((i) => i.type === "pr");
-
-  const allDates = items.map((i) => i.createdAt.slice(0, 10));
-  const totalDays = calendarDaysInRange(allDates);
-  const avgIssuesPerDay = issues.length / totalDays;
-  const avgPRsPerDay = prs.length / totalDays;
-
-  const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
-  const timeToCloseHours = closedItems
-    .map(
-      (i) => (new Date(i.closedAt!).getTime() - new Date(i.createdAt).getTime()) / (1000 * 60 * 60),
-    )
-    .sort((a, b) => a - b);
-
-  const timeToClosePercentiles: TimeToClosePercentiles | null =
-    timeToCloseHours.length > 0
-      ? {
-          p50: nearestRankPercentile(timeToCloseHours, 50),
-          p75: nearestRankPercentile(timeToCloseHours, 75),
-          p90: nearestRankPercentile(timeToCloseHours, 90),
-          p99: nearestRankPercentile(timeToCloseHours, 99),
-        }
-      : null;
-
-  const issuesByDay = new Map<string, number>();
-  const prsByDay = new Map<string, number>();
-  for (const item of items) {
-    const day = item.createdAt.slice(0, 10);
-    if (item.type === "pr") {
-      prsByDay.set(day, (prsByDay.get(day) ?? 0) + 1);
-    } else {
-      issuesByDay.set(day, (issuesByDay.get(day) ?? 0) + 1);
-    }
-  }
-  const allDays = new Set([...issuesByDay.keys(), ...prsByDay.keys()]);
-  const byDay =
-    allDays.size > 0
-      ? Array.from(allDays)
-          .map((date) => ({
-            date,
-            issues: issuesByDay.get(date) ?? 0,
-            prs: prsByDay.get(date) ?? 0,
-          }))
-          .sort((a, b) => a.date.localeCompare(b.date))
-      : byDayFromServer;
-
-  return {
-    total: issues.length,
-    open: issues.filter((i) => i.state === "open").length,
-    closed: issues.filter((i) => i.state === "closed").length,
-    totalPRs: prs.length,
-    openPRs: prs.filter((i) => i.state === "open").length,
-    closedPRs: prs.filter((i) => i.state === "closed").length,
-    avgIssuesPerDay,
-    avgPRsPerDay,
-    timeToClosePercentiles,
-    timeToCloseByMonth: computeTimeToCloseByMonth(items),
-    byAuthor: computeIssueOrigins(items, members),
-    byDay,
-  };
-}
+import { DEFAULT_FILTERS } from "./default-filters.js";
+import type { SearchFilters } from "./types/search-filters.js";
 
 const PAGE_SIZE = 50;
 
@@ -162,6 +52,7 @@ export function App() {
   const [cycleTime, setCycleTime] = useState<CycleTimeResponse | null>(null);
   const [metricsStatus, setMetricsStatus] = useState<Status>("loading");
   const [metricsError, setMetricsError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const [showIssues, setShowIssues] = useState(false);
@@ -178,15 +69,6 @@ export function App() {
   }
 
   useEffect(() => {
-    fetchIssues()
-      .then((result) => {
-        setData(result);
-        setStatus("success");
-      })
-      .catch((e: unknown) => {
-        setError(e instanceof Error ? e.message : "Unknown error");
-        setStatus("error");
-      });
     fetchMembers()
       .then(setMembers)
       .catch(() => {});
@@ -213,45 +95,34 @@ export function App() {
       });
   }, []);
 
+  // Refetch on every filters change. Aborting the previous request means a stale
+  // response can never overwrite a newer one. The current data stays on screen meanwhile.
+  useEffect(() => {
+    const controller = new AbortController();
+    setRefreshing(true);
+    fetchIssues(filters, controller.signal)
+      .then((result) => {
+        setData(result);
+        setError(null);
+        setStatus("success");
+        setRefreshing(false);
+      })
+      .catch((e: unknown) => {
+        if (controller.signal.aborted) return;
+        setError(e instanceof Error ? e.message : "Unknown error");
+        setStatus("error");
+        setRefreshing(false);
+      });
+    return () => controller.abort();
+  }, [filters]);
+
   function handleSearch(newFilters: SearchFilters) {
     setFilters(newFilters);
     setPage(1);
   }
 
-  const authors = data ? Array.from(new Set(data.issues.map((i) => i.author))).sort() : [];
-
-  const assignees = data
-    ? Array.from(new Set(data.issues.flatMap((i) => i.assignees ?? []))).sort()
-    : [];
-
-  const labels = data ? Array.from(new Set(data.issues.flatMap((i) => i.labels ?? []))).sort() : [];
-
-  const filteredIssues = data
-    ? data.issues.filter((i) => {
-        if (filters.type !== "all" && i.type !== filters.type) return false;
-        if (filters.title !== "" && !i.title.toLowerCase().includes(filters.title.toLowerCase()))
-          return false;
-        if (filters.state !== "all" && i.state !== filters.state) return false;
-        if (filters.author !== "" && i.author !== filters.author) return false;
-        if (filters.assignee !== "" && !(i.assignees ?? []).includes(filters.assignee))
-          return false;
-        if (filters.labels.length > 0 && !filters.labels.some((l) => (i.labels ?? []).includes(l)))
-          return false;
-        if (
-          filters.oneDayOnly &&
-          !(i.closedAt !== null && i.closedAt.slice(0, 10) === i.createdAt.slice(0, 10))
-        )
-          return false;
-        return true;
-      })
-    : [];
-
-  const filteredStats = data
-    ? computeFilteredStats(filteredIssues, data.stats.byDay, members)
-    : null;
-
-  const pagedIssues = filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const totalPages = Math.ceil(filteredIssues.length / PAGE_SIZE);
+  const pagedIssues = data ? data.issues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) : [];
+  const totalPages = data ? Math.ceil(data.issues.length / PAGE_SIZE) : 0;
 
   return (
     <div data-theme={theme} className="min-h-screen bg-surface text-text">
@@ -336,22 +207,25 @@ export function App() {
 
         {view === "issues" && status === "success" && data !== null && (
           <>
-            <div className="grid grid-cols-2 gap-6 mb-8">
+            <div
+              className={`grid grid-cols-2 gap-6 mb-8 transition-opacity ${refreshing ? "opacity-60" : ""}`}
+              aria-busy={refreshing}
+            >
               <SearchForm
-                authors={authors}
-                assignees={assignees}
-                labels={labels}
+                authors={data.filterOptions.authors}
+                assignees={data.filterOptions.assignees}
+                labels={data.filterOptions.labels}
                 onSearch={handleSearch}
               />
               <StatsSummary
-                stats={filteredStats!}
-                timeToCloseByMonth={filteredStats!.timeToCloseByMonth}
+                stats={data.stats}
+                timeToCloseByMonth={data.stats.timeToCloseByMonth}
               />
             </div>
 
-            <IssuesOverTimeChart byDay={filteredStats!.byDay} />
+            <IssuesOverTimeChart byDay={data.stats.byDay} />
 
-            <IssueOriginsTable entries={filteredStats!.byAuthor} />
+            <IssueOriginsTable entries={data.stats.byAuthor} />
 
             {/* Floating toggle button */}
             <button
@@ -361,7 +235,7 @@ export function App() {
               <List className="h-4 w-4" />
               Issues
               <span className="ml-1 rounded-full bg-accent/20 px-2 py-0.5 text-xs font-semibold text-accent">
-                {filteredIssues.length}
+                {data.total}
               </span>
             </button>
 
@@ -383,7 +257,7 @@ export function App() {
                 <span className="text-xs font-semibold uppercase tracking-widest text-muted">
                   Issues &amp; Pull Requests
                   <span className="ml-3 rounded-full bg-accent/20 px-2 py-0.5 text-accent">
-                    {filteredIssues.length}
+                    {data.total}
                   </span>
                 </span>
                 <button

@@ -8,8 +8,17 @@ import type {
   ThroughputResponse,
 } from "@github-intelligence/api-contracts";
 
-export async function fetchIssues(): Promise<IssuesResponse> {
-  const response = await fetch("/api/issues");
+import { IssuesQueryBuilder } from "./issues-query-builder.js";
+import type { SearchFilters } from "./types/search-filters.js";
+
+const issuesQueryBuilder = new IssuesQueryBuilder();
+
+export async function fetchIssues(
+  filters: SearchFilters,
+  signal?: AbortSignal,
+): Promise<IssuesResponse> {
+  const query = issuesQueryBuilder.build(filters);
+  const response = await fetch(query === "" ? "/api/issues" : `/api/issues?${query}`, { signal });
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({ error: "Unknown error" }));
