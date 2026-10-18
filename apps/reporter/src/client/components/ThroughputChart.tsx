@@ -9,6 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import type { BarRectangleItem } from "recharts";
 
 import type { WeeklyThroughput } from "../types.js";
 
@@ -21,7 +22,8 @@ export function ThroughputChart({ byWeek }: Props) {
 
   if (byWeek.length === 0) return null;
 
-  function handleBarClick(data: WeeklyThroughput) {
+  function handleBarClick(bar: BarRectangleItem) {
+    const data = bar.payload as WeeklyThroughput;
     setSelected((prev) => (prev?.week === data.week ? null : data));
   }
 

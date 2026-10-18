@@ -8,6 +8,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import type { ScatterPointItem } from "recharts";
 
 import type { CycleTimeItem } from "../types.js";
 
@@ -61,6 +62,11 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
       </div>
     </div>
   );
+}
+
+function openDot(dot: ScatterPointItem) {
+  const { url } = dot.payload as DotPayload;
+  window.open(url, "_blank", "noreferrer");
 }
 
 function toMs(dateStr: string): number {
@@ -118,7 +124,7 @@ export function CycleTimeScatterPlot({ items }: Props) {
               fill="oklch(0.70 0.17 162)"
               opacity={0.7}
               cursor="pointer"
-              onClick={(dot: DotPayload) => window.open(dot.url, "_blank", "noreferrer")}
+              onClick={openDot}
             />
           )}
           {prData.length > 0 && (
@@ -128,7 +134,7 @@ export function CycleTimeScatterPlot({ items }: Props) {
               fill="oklch(0.70 0.18 295)"
               opacity={0.7}
               cursor="pointer"
-              onClick={(dot: DotPayload) => window.open(dot.url, "_blank", "noreferrer")}
+              onClick={openDot}
             />
           )}
         </ScatterChart>
