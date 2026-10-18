@@ -11,6 +11,7 @@ export class IssueFilter {
       if (filters.state !== "all" && i.state !== filters.state) return false;
       if (filters.author !== "" && i.author !== filters.author) return false;
       if (filters.assignee !== "" && !(i.assignees ?? []).includes(filters.assignee)) return false;
+      if (filters.repository !== "" && i.repository !== filters.repository) return false;
       if (filters.labels.length > 0 && !filters.labels.some((l) => (i.labels ?? []).includes(l)))
         return false;
       if (

@@ -19,6 +19,7 @@ describe("IssuesQueryBuilder", () => {
         state: "open",
         author: "alice",
         assignee: "bob",
+        repository: "o/r",
         labels: ["a"],
         oneDayOnly: true,
       }),
@@ -30,6 +31,7 @@ describe("IssuesQueryBuilder", () => {
       state: "open",
       author: "alice",
       assignee: "bob",
+      repository: "o/r",
       labels: "a",
       oneDayOnly: "true",
     });

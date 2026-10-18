@@ -18,6 +18,7 @@ export const issuesQuerySchema = z.object({
   state: z.enum(["all", "open", "closed"]).default("all"),
   author: z.string().default(""),
   assignee: z.string().default(""),
+  repository: z.string().default(""),
   labels: labelsSchema,
   oneDayOnly: z.stringbool().default(false),
 });

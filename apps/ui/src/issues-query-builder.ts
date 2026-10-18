@@ -1,7 +1,7 @@
 import { DEFAULT_FILTERS } from "./default-filters.js";
 import type { SearchFilters } from "./types/search-filters.js";
 
-type StringFilterKey = "type" | "title" | "state" | "author" | "assignee";
+type StringFilterKey = "type" | "title" | "state" | "author" | "assignee" | "repository";
 
 export class IssuesQueryBuilder {
   private static readonly STRING_KEYS: StringFilterKey[] = [
@@ -10,6 +10,7 @@ export class IssuesQueryBuilder {
     "state",
     "author",
     "assignee",
+    "repository",
   ];
 
   build(filters: SearchFilters): string {

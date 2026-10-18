@@ -4,6 +4,7 @@ export interface SearchFilters {
   state: "all" | "open" | "closed";
   author: string;
   assignee: string;
+  repository: string;
   labels: string[];
   oneDayOnly: boolean;
 }

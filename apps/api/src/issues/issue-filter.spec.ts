@@ -28,6 +28,7 @@ const DEFAULT_QUERY: IssuesQuery = {
   state: "all",
   author: "",
   assignee: "",
+  repository: "",
   labels: [],
   oneDayOnly: false,
 };
@@ -81,6 +82,13 @@ describe("IssueFilter", () => {
     ];
 
     expect(idsOf(items, { assignee: "carol" })).toEqual([1]);
+  });
+
+  it("filters by repository, exactly", () => {
+    const items = [item(1, { repository: "o/api" }), item(2, { repository: "o/ui" })];
+
+    expect(idsOf(items, { repository: "o/ui" })).toEqual([2]);
+    expect(idsOf(items, { repository: "ui" })).toEqual([]);
   });
 
   it("matches ANY of the labels, treating missing labels as empty", () => {

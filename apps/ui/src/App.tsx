@@ -215,6 +215,7 @@ export function App() {
                 authors={data.filterOptions.authors}
                 assignees={data.filterOptions.assignees}
                 labels={data.filterOptions.labels}
+                repositories={data.filterOptions.repositories}
                 onSearch={handleSearch}
               />
               <StatsSummary stats={data.stats} timeToCloseByMonth={data.stats.timeToCloseByMonth} />

@@ -26,12 +26,22 @@ describe("IssueFilterOptionsService", () => {
   const service = new IssueFilterOptionsService();
 
   it("returns empty options for no items", () => {
-    expect(service.build([])).toEqual({ authors: [], assignees: [], labels: [] });
+    expect(service.build([])).toEqual({
+      authors: [],
+      assignees: [],
+      labels: [],
+      repositories: [],
+    });
   });
 
-  it("dedupes and sorts authors, assignees and labels", () => {
+  it("dedupes and sorts authors, assignees, labels and repositories", () => {
     const items = [
-      makeItem(1, { author: "zoe", assignees: ["bob", "amy"], labels: ["feature", "bug"] }),
+      makeItem(1, {
+        author: "zoe",
+        assignees: ["bob", "amy"],
+        labels: ["feature", "bug"],
+        repository: "o/ui",
+      }),
       makeItem(2, { author: "alice", assignees: ["amy"], labels: ["bug"] }),
       makeItem(3, { author: "zoe", assignees: [], labels: [] }),
     ];
@@ -40,6 +50,7 @@ describe("IssueFilterOptionsService", () => {
       authors: ["alice", "zoe"],
       assignees: ["amy", "bob"],
       labels: ["bug", "feature"],
+      repositories: ["o/r", "o/ui"],
     });
   });
 
@@ -50,6 +61,11 @@ describe("IssueFilterOptionsService", () => {
       labels: undefined,
     } as unknown as GithubIssue;
 
-    expect(service.build([legacy])).toEqual({ authors: ["octocat"], assignees: [], labels: [] });
+    expect(service.build([legacy])).toEqual({
+      authors: ["octocat"],
+      assignees: [],
+      labels: [],
+      repositories: ["o/r"],
+    });
   });
 });

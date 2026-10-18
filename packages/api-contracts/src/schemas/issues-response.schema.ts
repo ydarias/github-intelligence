@@ -7,6 +7,7 @@ export const issueFilterOptionsSchema = z.object({
   authors: z.array(z.string()),
   assignees: z.array(z.string()),
   labels: z.array(z.string()),
+  repositories: z.array(z.string()),
 });
 
 export const issuesResponseSchema = z.object({
