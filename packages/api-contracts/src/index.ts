@@ -32,3 +32,23 @@ export {
 export type { ReportDay } from "./types/report-day.js";
 export type { ReportResponse } from "./types/report-response.js";
 export type { RepositoryReport } from "./types/repository-report.js";
+export { githubIssueSchema } from "./schemas/github-issue.schema.js";
+export type { GithubIssue } from "./types/github-issue.js";
+export { issueOriginEntrySchema } from "./schemas/issue-origin-entry.schema.js";
+export type { IssueOriginEntry } from "./types/issue-origin-entry.js";
+export {
+  issueStatsSchema,
+  issuesByDaySchema,
+  monthlyTimeToCloseSchema,
+  timeToClosePercentilesSchema,
+} from "./schemas/issue-stats.schema.js";
+export type { IssueStats } from "./types/issue-stats.js";
+export type { IssuesByDay } from "./types/issues-by-day.js";
+export type { MonthlyTimeToClose } from "./types/monthly-time-to-close.js";
+export type { TimeToClosePercentiles } from "./types/time-to-close-percentiles.js";
+export {
+  issueFilterOptionsSchema,
+  issuesResponseSchema,
+} from "./schemas/issues-response.schema.js";
+export type { IssueFilterOptions } from "./types/issue-filter-options.js";
+export type { IssuesResponse } from "./types/issues-response.js";
