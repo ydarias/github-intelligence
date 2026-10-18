@@ -16,3 +16,19 @@ export {
 } from "./schemas/cycle-time-response.schema.js";
 export type { CycleTimeItem } from "./types/cycle-time-item.js";
 export type { CycleTimeResponse } from "./types/cycle-time-response.js";
+export {
+  quickCloseByDaySchema,
+  quickCloseItemSchema,
+  quickCloseResponseSchema,
+} from "./schemas/quick-close-response.schema.js";
+export type { QuickCloseByDay } from "./types/quick-close-by-day.js";
+export type { QuickCloseItem } from "./types/quick-close-item.js";
+export type { QuickCloseResponse } from "./types/quick-close-response.js";
+export {
+  reportDaySchema,
+  reportResponseSchema,
+  repositoryReportSchema,
+} from "./schemas/report-response.schema.js";
+export type { ReportDay } from "./types/report-day.js";
+export type { ReportResponse } from "./types/report-response.js";
+export type { RepositoryReport } from "./types/repository-report.js";
