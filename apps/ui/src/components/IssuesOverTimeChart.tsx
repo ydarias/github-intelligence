@@ -76,9 +76,7 @@ export function IssuesOverTimeChart({ byDay, aggregation = "sum" }: Props) {
               key={value}
               onClick={() => setGranularity(value)}
               className={`px-2 py-0.5 text-xs rounded ${
-                granularity === value
-                  ? "bg-accent text-white"
-                  : "text-muted hover:text-foreground"
+                granularity === value ? "bg-accent text-white" : "text-muted hover:text-foreground"
               }`}
             >
               {label}
