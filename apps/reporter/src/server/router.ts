@@ -2,8 +2,8 @@ import "dotenv/config";
 import {
   FlatCacheIssuesRepository,
   FlatCachePullRequestsRepository,
-} from "@github-intelligence/issues-collector";
-import { FlatCacheMembersRepository } from "@github-intelligence/members-collector";
+} from "@github-intelligence/issues";
+import { FlatCacheMembersRepository } from "@github-intelligence/members";
 import { Router } from "express";
 
 import { computeAgingWip } from "./aging-wip-stats.js";

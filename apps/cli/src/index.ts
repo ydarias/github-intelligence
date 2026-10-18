@@ -5,11 +5,8 @@ import {
   FlatCacheIssuesRepository,
   PullRequestsCollector,
   FlatCachePullRequestsRepository,
-} from "@github-intelligence/issues-collector";
-import {
-  MembersCollector,
-  FlatCacheMembersRepository,
-} from "@github-intelligence/members-collector";
+} from "@github-intelligence/issues";
+import { MembersCollector, FlatCacheMembersRepository } from "@github-intelligence/members";
 import { Command } from "commander";
 import { subMonths } from "date-fns";
 

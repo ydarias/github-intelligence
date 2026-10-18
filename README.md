@@ -64,16 +64,16 @@ Note: if you are going to use an Enterprise Github instance remember to give a v
 export GITHUB_TOKEN=ghp_your_token_here
 
 # Collect the last month of issues
-node apps/cli-runner/dist/index.js issues --repo facebook/react
+node apps/cli/dist/index.js issues --repo facebook/react
 
 # Or specify a date range
-node apps/cli-runner/dist/index.js issue --repo facebook/react --from 2024-01-01 --to 2024-03-31
+node apps/cli/dist/index.js issue --repo facebook/react --from 2024-01-01 --to 2024-03-31
 
 # Or collect the last month of PRs
-node apps/cli-runner/dist/index.js prs --repo facebook/react
+node apps/cli/dist/index.js prs --repo facebook/react
 
 # Or collect the members of a given organization
-node apps/cli-runner/dist/index.js members --org facebook
+node apps/cli/dist/index.js members --org facebook
 ```
 
 ### Open the dashboard
@@ -91,12 +91,12 @@ Then visit [http://localhost:5173](http://localhost:5173).
 ```
 github-intelligence/
 ├── apps/
-│   ├── cli-runner/        # CLI — collects and prints issues/PRs
+│   ├── cli/               # CLI — collects and prints issues/PRs
 │   └── reporter/          # Web dashboard — Express API + React SPA
 └── packages/
     ├── github-client/     # Core library — GitHub API + client interface
-    ├── issues-collector/  # Issues and PRs collector and repository
-    ├── members-collector/ # Members collector and repository
+    ├── issues/            # Issues and PRs collector and repository
+    ├── members/           # Members collector and repository
     └── tsconfig/          # Shared TypeScript configuration
 ```
 

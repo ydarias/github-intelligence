@@ -1,26 +1,22 @@
 {
-  "name": "@github-intelligence/members-collector",
+  "name": "@github-intelligence/cli",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@github-intelligence/github-client": "*",
-    "flat-cache": "6.1.22"
+    "@github-intelligence/issues": "*",
+    "@github-intelligence/members": "*",
+    "commander": "14.0.3",
+    "date-fns": "4.1.0",
+    "dotenv": "17.4.2"
   },
   "devDependencies": {
     "@github-intelligence/tsconfig": "*",
