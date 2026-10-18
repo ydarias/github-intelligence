@@ -1,10 +1,10 @@
-# cli-runner
+# cli
 
 Command-line tool for collecting GitHub issues and pull requests and printing a summary table.
 
 ## What it does
 
-`cli-runner` fetches issues and PRs from a GitHub repository for a given date range, caches the results locally via `@github-intelligence/issues-collector`, and prints a formatted table to stdout. Repeated runs for the same repository and date range return instantly from the cache.
+`cli` fetches issues and PRs from a GitHub repository for a given date range, caches the results locally via `@github-intelligence/issues`, and prints a formatted table to stdout. Repeated runs for the same repository and date range return instantly from the cache.
 
 ## Usage
 

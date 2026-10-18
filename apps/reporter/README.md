@@ -4,7 +4,7 @@ Web dashboard for exploring cached GitHub issues and pull requests.
 
 ## What it does
 
-`reporter` reads issues and PRs that were previously collected by `cli-runner` from the local cache and serves them through a React SPA backed by an Express API. It visualises the data with summary statistics, a time-series chart, and filterable tables.
+`reporter` reads issues and PRs that were previously collected by `cli` from the local cache and serves them through a React SPA backed by an Express API. It visualises the data with summary statistics, a time-series chart, and filterable tables.
 
 ## Architecture
 
@@ -63,7 +63,7 @@ If no cached data is found the endpoint returns `404` with an error message dire
 
 ```bash
 # Collect data first (from the repo root)
-node apps/cli-runner/dist/index.js --repo facebook/react
+node apps/cli/dist/index.js --repo facebook/react
 
 # Development mode (server + client with hot reload)
 cd apps/reporter

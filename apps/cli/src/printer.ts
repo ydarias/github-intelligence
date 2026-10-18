@@ -1,5 +1,5 @@
-import type { GithubIssue } from "@github-intelligence/issues-collector";
-import type { OrgMember } from "@github-intelligence/members-collector";
+import type { GithubIssue } from "@github-intelligence/issues";
+import type { OrgMember } from "@github-intelligence/members";
 
 export class Printer {
   static printIssuesTable(issues: GithubIssue[]): void {

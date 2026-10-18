@@ -1,4 +1,4 @@
-# @github-intelligence/issues-collector
+# @github-intelligence/issues
 
 Library for fetching GitHub issues and pull requests for a repository within a date range and caching the results to the local filesystem.
 
@@ -31,7 +31,7 @@ The cache key is `<owner>/<repo>/<from ISO>/<to ISO>`. Two requests for the same
 ## Installation
 
 ```bash
-npm install @github-intelligence/issues-collector
+npm install @github-intelligence/issues
 ```
 
 Set a GitHub personal access token to avoid rate limiting:
@@ -49,7 +49,7 @@ import {
   GitHubClient,
   FlatCacheIssuesRepository,
   IssuesCollector,
-} from "@github-intelligence/issues-collector";
+} from "@github-intelligence/issues";
 
 const collector = new IssuesCollector(
   new GitHubClient(), // reads GITHUB_TOKEN from env
@@ -71,7 +71,7 @@ import {
   GitHubClient,
   FlatCachePullRequestsRepository,
   PullRequestsCollector,
-} from "@github-intelligence/issues-collector";
+} from "@github-intelligence/issues";
 
 const collector = new PullRequestsCollector(
   new GitHubClient(),
@@ -96,7 +96,7 @@ const repo = new FlatCacheIssuesRepository("/tmp/my-cache");
 ### Bring your own repository
 
 ```ts
-import type { IssuesRepository, GitHubIssue } from "@github-intelligence/issues-collector";
+import type { IssuesRepository, GitHubIssue } from "@github-intelligence/issues";
 
 class MyRepository implements IssuesRepository {
   save(key: string, issues: GitHubIssue[]): void {

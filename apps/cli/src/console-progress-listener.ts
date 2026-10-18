@@ -1,4 +1,4 @@
-import type { DateWindow, SearchProgressListener } from "@github-intelligence/issues-collector";
+import type { DateWindow, SearchProgressListener } from "@github-intelligence/issues";
 
 export class ConsoleProgressListener implements SearchProgressListener {
   onWindowFetched(window: DateWindow, fetched: number, total: number): void {

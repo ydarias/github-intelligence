@@ -1,22 +1,27 @@
 {
-  "name": "@github-intelligence/cli-runner",
+  "name": "@github-intelligence/issues",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest --config jest.config.cjs",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@github-intelligence/github-client": "*",
-    "@github-intelligence/issues-collector": "*",
-    "@github-intelligence/members-collector": "*",
-    "commander": "14.0.3",
-    "date-fns": "4.1.0",
-    "dotenv": "17.4.2"
+    "flat-cache": "6.1.22"
   },
   "devDependencies": {
     "@github-intelligence/tsconfig": "*",

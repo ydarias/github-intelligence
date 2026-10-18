@@ -1,4 +1,4 @@
-import type { GithubIssue } from "@github-intelligence/issues-collector";
+import type { GithubIssue } from "@github-intelligence/issues";
 
 import { computeReport } from "./report-stats.js";
 
