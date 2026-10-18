@@ -14,7 +14,8 @@
     "format:check": "prettier --check .",
     "type-check": "turbo type-check",
     "test": "turbo test",
-    "clean": "turbo clean"
+    "clean": "turbo clean",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/jest": "30.0.0",
@@ -24,6 +25,7 @@
     "eslint-plugin-import-x": "4.16.2",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
+    "husky": "9.1.7",
     "jest": "30.5.2",
     "prettier": "3.8.3",
     "ts-jest": "29.4.15",
