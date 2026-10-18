@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   ci:
-    name: Lint, type-check, test, build
+    name: Format, lint, type-check, test, build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,6 +33,9 @@ jobs:
 
       - name: Audit dependencies
         run: npm audit --audit-level=high
+
+      - name: Format check
+        run: npm run format:check
 
       - name: Lint
         run: npm run lint
