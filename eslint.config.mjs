@@ -38,6 +38,17 @@ export default tseslint.config(
     },
   },
   {
+    // Nest resolves constructor dependencies from emitted decorator metadata, so DI classes must
+    // stay value imports. These parser options make consistent-type-imports decorator-aware.
+    files: ["apps/api/**/*.ts"],
+    languageOptions: {
+      parserOptions: {
+        emitDecoratorMetadata: true,
+        experimentalDecorators: true,
+      },
+    },
+  },
+  {
     files: ["apps/reporter/src/**/*.ts", "apps/reporter/src/**/*.tsx"],
     plugins: {
       react: reactPlugin,
