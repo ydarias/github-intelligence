@@ -8,10 +8,17 @@ Interview me until you have 95% confidence about what I actually want, not what 
 
 This is a Turborepo monorepo with npm workspaces.
 
-- `apps/` — runnable applications. None exist yet.
+- `apps/` — runnable applications.
+  - `apps/api` — NestJS REST API serving cached issues, members and stats.
+  - `apps/cli` — CLI to collect issues, PRs and members from GitHub into the cache.
+  - `apps/ui` — React + Vite dashboard.
+  - Layering: the ui talks to the api over REST and imports only types from `api-contracts`. Stats and filter logic live in the api.
 - `packages/` — shared internal packages consumed by apps and other packages.
   - `packages/tsconfig/` — shared TypeScript configs. New packages and apps extend `@github-intelligence/tsconfig/base.json`.
+  - `packages/api-contracts` — Zod schemas and types for the api responses and queries.
+  - `packages/github-client` — GitHub API client.
   - `packages/issues` — library to collect and store in a cache issues from Github.
+  - `packages/members` — library to collect and store in a cache the members of an organization.
 
 ## TypeScript
 

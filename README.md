@@ -11,7 +11,7 @@
 
 GitHub Intelligence is a monorepo that lets you pull issues and PRs from any GitHub repository for a given date range, cache them locally, and explore them through an interactive web dashboard — without keeping any remote infrastructure running.
 
-![Reporter dashboard screenshot](./assets/reporter-dashboard.png)
+![Dashboard screenshot](./assets/reporter-dashboard.png)
 
 ## Features
 
@@ -31,7 +31,8 @@ GitHub Intelligence is a monorepo that lets you pull issues and PRs from any Git
 - [Turborepo](https://turbo.build/) — monorepo task orchestration
 - [@octokit/rest](https://github.com/octokit/rest.js) — GitHub REST API client
 - [flat-cache](https://github.com/royriojas/flat-cache) — local disk cache
-- [Express](https://expressjs.com/) — API server
+- [NestJS](https://nestjs.com/) — API server
+- [Zod](https://zod.dev/) — schemas shared between the API and the UI
 - [React](https://react.dev/) + [Vite](https://vitejs.dev/) — web dashboard
 - [Recharts](https://recharts.org/) — data visualisation
 - [Commander](https://github.com/tj/commander.js/) — CLI argument parsing
@@ -79,21 +80,23 @@ node apps/cli/dist/index.js members --org facebook
 ### Open the dashboard
 
 ```bash
-export GITHUB_TOKEN=ghp_your_token_here 
-
 npm run dev
 ```
 
-Then visit [http://localhost:5173](http://localhost:5173).
+This starts the API on [http://localhost:3001](http://localhost:3001) and the UI on [http://localhost:5173](http://localhost:5173). Collect some issues with the CLI first, otherwise the API answers `404 No cached issues found`. Then visit [http://localhost:5173](http://localhost:5173).
+
+Turbo only passes `CACHE_FOLDER`, `PORT`, `GITHUB_TOKEN` and `GITHUB_BASE_URL` through to `npm run dev`, so export them in your shell or put them in `apps/api/.env`.
 
 ## Project structure
 
 ```
 github-intelligence/
 ├── apps/
+│   ├── api/               # REST API — serves cached issues, members and stats (NestJS)
 │   ├── cli/               # CLI — collects and prints issues/PRs
-│   └── reporter/          # Web dashboard — Express API + React SPA
+│   └── ui/                # Web dashboard (React + Vite)
 └── packages/
+    ├── api-contracts/     # Zod schemas and types shared by the API and the UI
     ├── github-client/     # Core library — GitHub API + client interface
     ├── issues/            # Issues and PRs collector and repository
     ├── members/           # Members collector and repository
@@ -102,14 +105,14 @@ github-intelligence/
 
 ## Environment variables
 
-| Variable          | Used by       | Description                                                      |
-| ----------------- | ------------- |------------------------------------------------------------------|
-| `GITHUB_TOKEN`    | CLI, Reporter | GitHub personal access token                                     |
-| `GITHUB_BASE_URL` | CLI           | GitHub API base URL (GitHub Enterprise)                          |
-| `CACHE_FOLDER`    | CLI, Reporter | Local cache directory (default: `/tmp/.cache/issues-collector`)  |
-| `PORT`            | Reporter      | HTTP port for the reporter server (default: `3001`)              |
+| Variable          | Used by  | Description                                                     |
+| ----------------- | -------- | --------------------------------------------------------------- |
+| `GITHUB_TOKEN`    | CLI, API | GitHub personal access token                                    |
+| `GITHUB_BASE_URL` | CLI      | GitHub API base URL (GitHub Enterprise)                         |
+| `CACHE_FOLDER`    | CLI, API | Local cache directory (default: `/tmp/.cache/issues-collector`) |
+| `PORT`            | API      | HTTP port for the API server (default: `3001`)                  |
 
-Both apps load `.env` files automatically via `dotenv`.
+The CLI and the API load a `.env` file automatically via `dotenv`, from their own directory (`apps/cli/.env`, `apps/api/.env`). The UI does not read any environment variables.
 
 ## Development
 

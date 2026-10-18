@@ -22,7 +22,7 @@ flowchart LR
 
 **IssuesCollector / PullRequestsCollector** — orchestrate fetching and caching. On first call they hit the API and persist results; subsequent calls with the same key return the cached data without a network request.
 
-**FlatCacheIssuesRepository / FlatCachePullRequestsRepository** — persist data to disk using `flat-cache`. The default directory is `.cache/issues-collector/` and `.cache/prs-collector/` respectively. Both implement their repository interface, so you can swap in any storage backend.
+**FlatCacheIssuesRepository / FlatCachePullRequestsRepository** — persist data to disk using `flat-cache`. The default directory is `/tmp/.cache/issues-collector` for both (overridable with `CACHE_FOLDER`). Both implement their repository interface, so you can swap in any storage backend.
 
 ### Cache key
 
@@ -53,7 +53,7 @@ import {
 
 const collector = new IssuesCollector(
   new GitHubClient(), // reads GITHUB_TOKEN from env
-  new FlatCacheIssuesRepository(), // caches to .cache/issues-collector/
+  new FlatCacheIssuesRepository(), // caches to /tmp/.cache/issues-collector
 );
 
 const issues = await collector.collect({
