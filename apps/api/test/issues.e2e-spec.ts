@@ -117,4 +117,100 @@ describe("GET /api/issues", () => {
 
     expect(response.body).toEqual({ error: "No cached issues found. Run the CLI first." });
   });
+
+  describe("filters", () => {
+    const closedSameDay = item(4, {
+      createdAt: "2026-02-01T08:00:00Z",
+      state: "closed",
+      closedAt: "2026-02-01T18:00:00Z",
+      type: "pr",
+      author: "bob",
+    });
+
+    it("returns only the matches, with total equal to the filtered count", async () => {
+      await createApp([oldest, middle], [newest, closedSameDay]);
+
+      const response = await request(app.getHttpServer())
+        .get("/api/issues?type=pr&state=closed")
+        .expect(200);
+
+      expect(response.body.issues).toEqual([closedSameDay]);
+      expect(response.body.total).toBe(1);
+    });
+
+    it("parses comma-separated labels and the oneDayOnly flag", async () => {
+      await createApp([oldest, middle], [newest, closedSameDay]);
+
+      const labels = await request(app.getHttpServer())
+        .get("/api/issues?labels=feature,nope")
+        .expect(200);
+      const oneDay = await request(app.getHttpServer())
+        .get("/api/issues?oneDayOnly=true")
+        .expect(200);
+
+      expect(labels.body.issues).toEqual([middle]);
+      expect(oneDay.body.issues).toEqual([closedSameDay]);
+    });
+
+    it("computes the stats over the filtered set", async () => {
+      await createApp([oldest, middle], [newest]);
+
+      const response = await request(app.getHttpServer()).get("/api/issues?author=bob").expect(200);
+
+      expect(response.body.stats).toMatchObject({ total: 1, open: 0, closed: 1, totalPRs: 0 });
+      expect(response.body.stats.byAuthor).toEqual([
+        { login: "bob", name: null, total: 1, open: 0, closed: 1, percentage: 100 },
+      ]);
+      expect(response.body.stats.byDay).toEqual([{ date: "2026-01-03", issues: 1, prs: 0 }]);
+    });
+
+    it("keeps the filter options built from the unfiltered set", async () => {
+      await createApp([oldest, middle], [newest]);
+
+      const response = await request(app.getHttpServer()).get("/api/issues?author=bob").expect(200);
+
+      expect(response.body.filterOptions).toEqual({
+        authors: ["alice", "bob"],
+        assignees: ["bob"],
+        labels: ["bug", "feature"],
+      });
+    });
+
+    it("returns 200 with no issues and the unfiltered byDay when nothing matches", async () => {
+      await createApp([oldest, middle], [newest]);
+
+      const response = await request(app.getHttpServer())
+        .get("/api/issues?author=nobody")
+        .expect(200);
+
+      expect(response.body.issues).toEqual([]);
+      expect(response.body.total).toBe(0);
+      expect(response.body.stats.total).toBe(0);
+      expect(response.body.stats.byDay).toEqual([
+        { date: "2026-01-01", issues: 1, prs: 0 },
+        { date: "2026-01-03", issues: 1, prs: 0 },
+        { date: "2026-01-05", issues: 0, prs: 1 },
+      ]);
+      expect(response.body.filterOptions.authors).toEqual(["alice", "bob"]);
+    });
+
+    it.each(["type=foo", "state=merged", "oneDayOnly=maybe"])(
+      "returns 400 for %s",
+      async (query) => {
+        await createApp([oldest, middle], [newest]);
+
+        await request(app.getHttpServer()).get(`/api/issues?${query}`).expect(400);
+      },
+    );
+
+    it("returns the exact 404 body when nothing is cached, whatever the filters", async () => {
+      await createApp([], []);
+
+      const response = await request(app.getHttpServer())
+        .get("/api/issues?type=pr&labels=bug")
+        .expect(404);
+
+      expect(response.body).toEqual({ error: "No cached issues found. Run the CLI first." });
+    });
+  });
 });
