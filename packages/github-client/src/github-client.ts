@@ -89,5 +89,3 @@ export class GitHubClient {
     return items.map((item) => issueMapper.toGitHubIssue(item, repo, itemType));
   }
 }
-
-const unusedTempVariable = 1;
