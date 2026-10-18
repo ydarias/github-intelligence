@@ -217,10 +217,7 @@ export function App() {
                 labels={data.filterOptions.labels}
                 onSearch={handleSearch}
               />
-              <StatsSummary
-                stats={data.stats}
-                timeToCloseByMonth={data.stats.timeToCloseByMonth}
-              />
+              <StatsSummary stats={data.stats} timeToCloseByMonth={data.stats.timeToCloseByMonth} />
             </div>
 
             <IssuesOverTimeChart byDay={data.stats.byDay} />

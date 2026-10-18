@@ -1,11 +1,13 @@
 import type { IssueOriginEntry } from "@github-intelligence/api-contracts";
 import { useState } from "react";
 
-
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.js";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table.js";
 
-type SortColumn = keyof Pick<IssueOriginEntry, "login" | "total" | "open" | "closed" | "percentage">;
+type SortColumn = keyof Pick<
+  IssueOriginEntry,
+  "login" | "total" | "open" | "closed" | "percentage"
+>;
 type SortDir = "asc" | "desc";
 
 interface SortState {

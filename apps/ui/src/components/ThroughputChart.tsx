@@ -12,7 +12,6 @@ import {
   type BarRectangleItem,
 } from "recharts";
 
-
 interface Props {
   byWeek: WeeklyThroughput[];
 }
@@ -57,8 +56,22 @@ export function ThroughputChart({ byWeek }: Props) {
             }}
           />
           <Legend wrapperStyle={{ fontSize: "0.75rem", color: "oklch(0.55 0 0)" }} />
-          <Bar dataKey="issues" stackId="a" fill="oklch(0.70 0.17 162)" radius={[0, 0, 0, 0]} cursor="pointer" onClick={handleBarClick} />
-          <Bar dataKey="prs" stackId="a" fill="oklch(0.70 0.18 295)" radius={[4, 4, 0, 0]} cursor="pointer" onClick={handleBarClick} />
+          <Bar
+            dataKey="issues"
+            stackId="a"
+            fill="oklch(0.70 0.17 162)"
+            radius={[0, 0, 0, 0]}
+            cursor="pointer"
+            onClick={handleBarClick}
+          />
+          <Bar
+            dataKey="prs"
+            stackId="a"
+            fill="oklch(0.70 0.18 295)"
+            radius={[4, 4, 0, 0]}
+            cursor="pointer"
+            onClick={handleBarClick}
+          />
         </BarChart>
       </ResponsiveContainer>
 

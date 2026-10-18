@@ -11,7 +11,6 @@ import {
   type ScatterPointItem,
 } from "recharts";
 
-
 interface Props {
   items: CycleTimeItem[];
 }
@@ -82,11 +81,23 @@ export function CycleTimeScatterPlot({ items }: Props) {
 
   const issueData = items
     .filter((i) => i.type === "issue")
-    .map((i) => ({ x: toMs(i.closeDate), closeDate: i.closeDate, cycleDays: i.cycleDays, title: i.title, url: i.url }));
+    .map((i) => ({
+      x: toMs(i.closeDate),
+      closeDate: i.closeDate,
+      cycleDays: i.cycleDays,
+      title: i.title,
+      url: i.url,
+    }));
 
   const prData = items
     .filter((i) => i.type === "pr")
-    .map((i) => ({ x: toMs(i.closeDate), closeDate: i.closeDate, cycleDays: i.cycleDays, title: i.title, url: i.url }));
+    .map((i) => ({
+      x: toMs(i.closeDate),
+      closeDate: i.closeDate,
+      cycleDays: i.cycleDays,
+      title: i.title,
+      url: i.url,
+    }));
 
   return (
     <div className="rounded-xl border border-border bg-panel p-5 mb-6">
