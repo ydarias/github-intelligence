@@ -1,6 +1,5 @@
+import type { IssueStats, MonthlyTimeToClose } from "@github-intelligence/api-contracts";
 import { useState } from "react";
-
-import type { IssueStats, MonthlyTimeToClose } from "../types.js";
 
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card.js";
 

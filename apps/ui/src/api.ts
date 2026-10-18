@@ -6,7 +6,7 @@ import type {
   QuickCloseResponse,
   ReportResponse,
   ThroughputResponse,
-} from "./types.js";
+} from "@github-intelligence/api-contracts";
 
 export async function fetchIssues(): Promise<IssuesResponse> {
   const response = await fetch("/api/issues");

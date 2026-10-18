@@ -1,3 +1,4 @@
+import type { QuickCloseItem } from "@github-intelligence/api-contracts";
 import { useState } from "react";
 import {
   LineChart,
@@ -9,7 +10,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import type { QuickCloseItem } from "../types.js";
 
 type Granularity = "day" | "week" | "month";
 

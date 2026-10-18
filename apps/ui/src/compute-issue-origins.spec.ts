@@ -1,16 +1,17 @@
-import { computeIssueOrigins } from "./compute-issue-origins.js";
-import type { GitHubIssueDTO, OrgMember } from "./types.js";
+import type { GithubIssue, OrgMember } from "@github-intelligence/api-contracts";
 
-function makeItem(
-  overrides: Partial<GitHubIssueDTO> & { id: number; author: string },
-): GitHubIssueDTO {
+import { computeIssueOrigins } from "./compute-issue-origins.js";
+
+function makeItem(overrides: Partial<GithubIssue> & { id: number; author: string }): GithubIssue {
   return {
     id: overrides.id,
     number: overrides.id,
     repository: overrides.repository ?? "owner/repo",
     title: `Issue ${overrides.id}`,
+    body: null,
     state: overrides.state ?? "open",
     createdAt: overrides.createdAt ?? "2024-01-01T00:00:00Z",
+    updatedAt: overrides.updatedAt ?? "2024-01-01T00:00:00Z",
     closedAt: overrides.closedAt !== undefined ? overrides.closedAt : null,
     url: `https://github.com/owner/repo/issues/${overrides.id}`,
     author: overrides.author,

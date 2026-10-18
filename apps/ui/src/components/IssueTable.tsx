@@ -1,11 +1,11 @@
-import type { GitHubIssueDTO } from "../types.js";
+import type { GithubIssue } from "@github-intelligence/api-contracts";
 
 import { Badge } from "./ui/badge.js";
 import { Button } from "./ui/button.js";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./ui/table.js";
 
 interface Props {
-  issues: GitHubIssueDTO[];
+  issues: GithubIssue[];
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;

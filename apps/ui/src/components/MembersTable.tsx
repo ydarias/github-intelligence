@@ -1,7 +1,6 @@
+import type { OrgMember } from "@github-intelligence/api-contracts";
 import { Copy, Check, Download } from "lucide-react";
 import { useState } from "react";
-
-import type { OrgMember } from "../types.js";
 
 import { Button } from "./ui/button.js";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.js";

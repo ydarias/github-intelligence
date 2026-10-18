@@ -1,3 +1,16 @@
+import type {
+  AgingWipItem,
+  CycleTimeResponse,
+  IssuesResponse,
+  IssueStats,
+  GithubIssue,
+  MonthlyTimeToClose,
+  TimeToClosePercentiles,
+  OrgMember,
+  QuickCloseResponse,
+  ReportResponse,
+  ThroughputResponse,
+} from "@github-intelligence/api-contracts";
 import { X, List, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -21,19 +34,6 @@ import { SearchForm, DEFAULT_FILTERS, type SearchFilters } from "./components/Se
 import { StatsSummary } from "./components/StatsSummary.js";
 import { ThroughputChart } from "./components/ThroughputChart.js";
 import { computeIssueOrigins } from "./compute-issue-origins.js";
-import type {
-  AgingWipItem,
-  CycleTimeResponse,
-  IssuesResponse,
-  IssueStats,
-  GitHubIssueDTO,
-  MonthlyTimeToClose,
-  TimeToClosePercentiles,
-  OrgMember,
-  QuickCloseResponse,
-  ReportResponse,
-  ThroughputResponse,
-} from "./types.js";
 
 function nearestRankPercentile(sorted: number[], p: number): number {
   const rank = Math.ceil((p / 100) * sorted.length);
@@ -49,7 +49,7 @@ function calendarDaysInRange(dates: string[]): number {
   );
 }
 
-function computeTimeToCloseByMonth(items: GitHubIssueDTO[]): MonthlyTimeToClose[] {
+function computeTimeToCloseByMonth(items: GithubIssue[]): MonthlyTimeToClose[] {
   const closedItems = items.filter((i) => i.state === "closed" && i.closedAt !== null);
   const byMonth = new Map<string, number[]>();
   for (const item of closedItems) {
@@ -75,7 +75,7 @@ function computeTimeToCloseByMonth(items: GitHubIssueDTO[]): MonthlyTimeToClose[
 }
 
 function computeFilteredStats(
-  items: GitHubIssueDTO[],
+  items: GithubIssue[],
   byDayFromServer: IssueStats["byDay"],
   members: OrgMember[],
 ): IssueStats {

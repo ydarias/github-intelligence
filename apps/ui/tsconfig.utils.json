@@ -4,9 +4,5 @@
     "rootDir": "src",
     "noEmit": true
   },
-  "include": [
-    "src/client/types.ts",
-    "src/client/compute-issue-origins.ts",
-    "src/client/compute-issue-origins.spec.ts"
-  ]
+  "include": ["src/compute-issue-origins.ts", "src/compute-issue-origins.spec.ts"]
 }

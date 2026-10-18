@@ -1,3 +1,4 @@
+import type { WeeklyThroughput } from "@github-intelligence/api-contracts";
 import { useState } from "react";
 import {
   BarChart,
@@ -11,7 +12,6 @@ import {
   type BarRectangleItem,
 } from "recharts";
 
-import type { WeeklyThroughput } from "../types.js";
 
 interface Props {
   byWeek: WeeklyThroughput[];

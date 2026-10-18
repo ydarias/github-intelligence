@@ -1,7 +1,7 @@
-import type { GitHubIssueDTO, IssueOriginEntry, OrgMember } from "./types.js";
+import type { GithubIssue, IssueOriginEntry, OrgMember } from "@github-intelligence/api-contracts";
 
 export function computeIssueOrigins(
-  items: GitHubIssueDTO[],
+  items: GithubIssue[],
   members: OrgMember[],
 ): IssueOriginEntry[] {
   const membersByLogin = new Map<string, OrgMember>(members.map((m) => [m.login, m]));

@@ -1,6 +1,6 @@
+import type { IssueOriginEntry } from "@github-intelligence/api-contracts";
 import { useState } from "react";
 
-import type { IssueOriginEntry } from "../types.js";
 
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.js";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table.js";

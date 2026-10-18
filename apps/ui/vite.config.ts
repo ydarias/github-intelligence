@@ -7,12 +7,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src/client"),
+      "@": path.resolve(__dirname, "src"),
     },
   },
   root: ".",
   build: {
-    outDir: "dist/client",
+    outDir: "dist",
     emptyOutDir: true,
   },
   server: {

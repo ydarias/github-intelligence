@@ -1,4 +1,4 @@
-import type { QuickCloseResponse, RepositoryReport } from "../types.js";
+import type { QuickCloseResponse, RepositoryReport } from "@github-intelligence/api-contracts";
 
 import { IssuesOverTimeChart } from "./IssuesOverTimeChart.js";
 import { QuickCloseChart } from "./QuickCloseChart.js";

@@ -1,4 +1,4 @@
-import type { AgingWipItem } from "../types.js";
+import type { AgingWipItem } from "@github-intelligence/api-contracts";
 
 interface Props {
   items: AgingWipItem[];

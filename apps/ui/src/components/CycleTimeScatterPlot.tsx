@@ -1,3 +1,4 @@
+import type { CycleTimeItem } from "@github-intelligence/api-contracts";
 import {
   ScatterChart,
   Scatter,
@@ -10,7 +11,6 @@ import {
   type ScatterPointItem,
 } from "recharts";
 
-import type { CycleTimeItem } from "../types.js";
 
 interface Props {
   items: CycleTimeItem[];
