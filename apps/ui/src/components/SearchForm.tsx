@@ -15,10 +15,11 @@ interface Props {
   authors: string[];
   assignees: string[];
   labels: string[];
+  repositories: string[];
   onSearch: (filters: SearchFilters) => void;
 }
 
-export function SearchForm({ authors, assignees, labels, onSearch }: Props) {
+export function SearchForm({ authors, assignees, labels, repositories, onSearch }: Props) {
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
 
   function handleReset() {
@@ -49,6 +50,26 @@ export function SearchForm({ authors, assignees, labels, onSearch }: Props) {
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="issue">Issues</SelectItem>
               <SelectItem value="pr">PRs</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Label htmlFor="filter-repository">Repository</Label>
+          <Select
+            value={filters.repository}
+            onValueChange={(v) =>
+              setFilters((f) => ({ ...f, repository: v === "__all__" ? "" : v }))
+            }
+          >
+            <SelectTrigger id="filter-repository">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All</SelectItem>
+              {repositories.map((r) => (
+                <SelectItem key={r} value={r}>
+                  {r}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 

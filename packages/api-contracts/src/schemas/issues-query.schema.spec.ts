@@ -8,6 +8,7 @@ describe("issuesQuerySchema", () => {
       state: "all",
       author: "",
       assignee: "",
+      repository: "",
       labels: [],
       oneDayOnly: false,
     });
@@ -21,6 +22,7 @@ describe("issuesQuerySchema", () => {
         state: "open",
         author: "alice",
         assignee: "bob",
+        repository: "o/r",
         labels: "bug",
         oneDayOnly: "true",
       }),
@@ -30,6 +32,7 @@ describe("issuesQuerySchema", () => {
       state: "open",
       author: "alice",
       assignee: "bob",
+      repository: "o/r",
       labels: ["bug"],
       oneDayOnly: true,
     });

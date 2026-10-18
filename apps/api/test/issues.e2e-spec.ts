@@ -41,7 +41,12 @@ const middle = item(2, {
   author: "bob",
   labels: ["feature", "bug"],
 });
-const newest = item(3, { createdAt: "2026-01-05T00:00:00Z", type: "pr", body: null });
+const newest = item(3, {
+  createdAt: "2026-01-05T00:00:00Z",
+  type: "pr",
+  body: null,
+  repository: "o/ui",
+});
 
 const members: OrgMember[] = [
   {
@@ -107,6 +112,7 @@ describe("GET /api/issues", () => {
       authors: ["alice", "bob"],
       assignees: ["bob"],
       labels: ["bug", "feature"],
+      repositories: ["o/r", "o/ui"],
     });
   });
 
@@ -152,6 +158,20 @@ describe("GET /api/issues", () => {
       expect(oneDay.body.issues).toEqual([closedSameDay]);
     });
 
+    it("filters by the exact repository name", async () => {
+      await createApp([oldest, middle], [newest]);
+
+      const exact = await request(app.getHttpServer())
+        .get("/api/issues?repository=o/ui")
+        .expect(200);
+      const partial = await request(app.getHttpServer())
+        .get("/api/issues?repository=ui")
+        .expect(200);
+
+      expect(exact.body.issues).toEqual([newest]);
+      expect(partial.body.issues).toEqual([]);
+    });
+
     it("computes the stats over the filtered set", async () => {
       await createApp([oldest, middle], [newest]);
 
@@ -173,6 +193,7 @@ describe("GET /api/issues", () => {
         authors: ["alice", "bob"],
         assignees: ["bob"],
         labels: ["bug", "feature"],
+        repositories: ["o/r", "o/ui"],
       });
     });
 

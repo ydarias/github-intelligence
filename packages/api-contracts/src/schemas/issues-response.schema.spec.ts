@@ -36,7 +36,7 @@ const response: IssuesResponse = {
     byDay: [{ date: "2026-01-01", issues: 1, prs: 0 }],
   },
   total: 1,
-  filterOptions: { authors: ["alice"], assignees: ["bob"], labels: ["bug"] },
+  filterOptions: { authors: ["alice"], assignees: ["bob"], labels: ["bug"], repositories: ["o/r"] },
 };
 
 describe("issuesResponseSchema", () => {
@@ -45,7 +45,10 @@ describe("issuesResponseSchema", () => {
   });
 
   it("accepts empty filter options", () => {
-    const empty = { ...response, filterOptions: { authors: [], assignees: [], labels: [] } };
+    const empty = {
+      ...response,
+      filterOptions: { authors: [], assignees: [], labels: [], repositories: [] },
+    };
 
     expect(issuesResponseSchema.parse(empty)).toEqual(empty);
   });

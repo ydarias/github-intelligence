@@ -6,6 +6,7 @@ export const DEFAULT_FILTERS: SearchFilters = {
   state: "all",
   author: "",
   assignee: "",
+  repository: "",
   labels: [],
   oneDayOnly: false,
 };
