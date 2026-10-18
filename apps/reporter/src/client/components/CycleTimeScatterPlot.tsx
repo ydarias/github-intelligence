@@ -7,8 +7,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  type ScatterPointItem,
 } from "recharts";
-import type { ScatterPointItem } from "recharts";
 
 import type { CycleTimeItem } from "../types.js";
 

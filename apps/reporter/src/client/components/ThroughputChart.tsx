@@ -8,8 +8,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  type BarRectangleItem,
 } from "recharts";
-import type { BarRectangleItem } from "recharts";
 
 import type { WeeklyThroughput } from "../types.js";
 
