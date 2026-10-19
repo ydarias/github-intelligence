@@ -1,5 +1,7 @@
 # GitHub Intelligence
 
+> This is a pet project whose main goal is to learn patterns and better ways to work with AI for me. Do not expect specific features or maintenance.
+>
 > Collect GitHub issues and pull requests, explore them in your browser.
 
 [![CI](https://github.com/ydarias/github-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/ydarias/github-intelligence/actions/workflows/ci.yml)
